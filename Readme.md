@@ -1,7 +1,7 @@
 # Проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Максим](https://up.htmlacademy.ru/ecmascript/13/user/109451).
-* Наставник: `Неизвестно`.
+* Наставник: Илья Локалин.
 
 ---
 
