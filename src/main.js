@@ -5,12 +5,13 @@ import {filmCard} from "./view/film-card";
 import {menu} from "./view/menu";
 import {allFilmsNumber} from "./view/film-counter";
 import {filmsContainer} from "./view/films-container";
-import {mostCommentedFilms} from "./view/most-commented-container";
-import {mostRatedFilms} from "./view/most-rated-container";
+import {generateFilmCard} from "../mock/film-information-mock";
+import {popupButtons} from "./view/popup-controls";
+import {createComments} from "./view/comments";
+import {cardsFiltersAdd} from "./view/cards-filters";
+import {navigationControls} from "./view/navigation";
 
 const FILMS_NUMBER = 5;
-const TOP_RATED_FILMS_NUMBER = 2;
-const MOST_COMMENTED_FILMS_NUMBER = 2;
 const pageHeader = document.querySelector(`.header`);
 const pageMain = document.querySelector(`.main`);
 const pageFooter = document.querySelector(`.footer`);
@@ -19,30 +20,45 @@ const render = (container, template, place) => {
 };
 
 render(pageHeader, userRating(), `beforeend`);
-render(pageMain, menu(), `beforeend`);
-render(pageFooter, allFilmsNumber(), `beforeend`);
 render(pageMain, filmsContainer(), `beforeend`);
 
 const filmsListContainer = document.querySelector(`.films-list__container`);
 const filmsList = document.querySelector(`.films-list`);
-const filmsBoard = document.querySelector(`.films`);
+const FILM_CARDS_COUNT = 20;
+const filmCards = new Array(FILM_CARDS_COUNT).fill().map(generateFilmCard);
+const filters = navigationControls(filmCards);
+
+
+console.log(filmCards);
 
 for (let i = 0; i < FILMS_NUMBER; i++) {
-  render(filmsListContainer, filmCard(), `beforeend`);
+  render(filmsListContainer, filmCard(filmCards[i]), `beforeend`);
 }
 render(filmsList, showMore(), `beforeend`);
-// render(pageFooter, showMovieDetails(), `afterend`);
+render(pageFooter, showMovieDetails(filmCards[0]), `afterend`);
+render(pageFooter, allFilmsNumber(filmCards), `beforeend`);
+render(pageMain, menu(filters), `afterbegin`);
 
-render(filmsBoard, mostRatedFilms(), `beforeend`);
-render(filmsBoard, mostCommentedFilms(), `beforeend`);
+const commentsContainer = document.querySelector(`.film-details__comments-list`);
 
-const topRatedContainer = document.querySelector(`.films-list--extra:nth-child(2)`).querySelector(`.films-list__container`);
-const topCommentedContainer = document.querySelector(`.films-list--extra:last-child`).querySelector(`.films-list__container`);
-
-for (let i = 0; i < TOP_RATED_FILMS_NUMBER; i++) {
-  render(topRatedContainer, filmCard(), `beforeend`);
+for (let i = 0; i < filmCards[0].comments.length; i++) {
+  render(commentsContainer, createComments(filmCards[0].comments[i]), `afterbegin`);
 }
-for (let i = 0; i < MOST_COMMENTED_FILMS_NUMBER; i++) {
-  render(topCommentedContainer, filmCard(), `beforeend`);
-}
+
+const showMoreButton = document.querySelector(`.films-list__show-more`);
+
+showMoreButton.addEventListener(`click`, function () {
+  const filmCardsNumber = document.querySelectorAll(`.film-card`).length;
+  for (let i = 0; i < FILMS_NUMBER; i++) {
+    render(filmsListContainer, filmCard(filmCards[i + filmCardsNumber]), `beforeend`);
+  }
+  if (filmCardsNumber + FILMS_NUMBER >= FILM_CARDS_COUNT) {
+    showMoreButton.classList.add(`visually-hidden`);
+  }
+  popupButtons();
+});
+
+
+popupButtons();
+cardsFiltersAdd();
 
