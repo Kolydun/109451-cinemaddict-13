@@ -1,5 +1,5 @@
-export const allFilmsNumber = () => {
+export const allFilmsNumber = (array) => {
   return `<section class="footer__statistics">
-    <p>130 291 movies inside</p>
+    <p>${array.length} movies inside</p>
   </section>`;
 };
