@@ -11,5 +11,4 @@ export const popupButtons = () => {
   popupCloseButton.addEventListener(`click`, function () {
     popup.classList.add(`visually-hidden`);
   });
-
 };

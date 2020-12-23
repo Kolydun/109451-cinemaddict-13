@@ -5,13 +5,14 @@ import {filmCard} from "./view/film-card";
 import {menu} from "./view/menu";
 import {allFilmsNumber} from "./view/film-counter";
 import {filmsContainer} from "./view/films-container";
-import {generateFilmCard} from "../mock/film-information-mock";
+import {generateFilmCard} from "./view/mock/film-information-mock";
 import {popupButtons} from "./view/popup-controls";
 import {createComments} from "./view/comments";
 import {cardsFiltersAdd} from "./view/cards-filters";
 import {navigationControls} from "./view/navigation";
 
 const FILMS_NUMBER = 5;
+const FILM_CARDS_COUNT = 20;
 const pageHeader = document.querySelector(`.header`);
 const pageMain = document.querySelector(`.main`);
 const pageFooter = document.querySelector(`.footer`);
@@ -24,12 +25,8 @@ render(pageMain, filmsContainer(), `beforeend`);
 
 const filmsListContainer = document.querySelector(`.films-list__container`);
 const filmsList = document.querySelector(`.films-list`);
-const FILM_CARDS_COUNT = 20;
 const filmCards = new Array(FILM_CARDS_COUNT).fill().map(generateFilmCard);
 const filters = navigationControls(filmCards);
-
-
-console.log(filmCards);
 
 for (let i = 0; i < FILMS_NUMBER; i++) {
   render(filmsListContainer, filmCard(filmCards[i]), `beforeend`);
@@ -58,7 +55,5 @@ showMoreButton.addEventListener(`click`, function () {
   popupButtons();
 });
 
-
 popupButtons();
 cardsFiltersAdd();
-

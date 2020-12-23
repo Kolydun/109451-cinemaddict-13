@@ -25,7 +25,6 @@ const createDescription = () => {
   for (let i = 0; i < randomDescriptionNumber; i++) {
     randomDescription.push(descriptions[getRandomInteger(0, descriptions.length - 1)]);
   }
-
   return randomDescription;
 };
 
@@ -74,7 +73,7 @@ const createRandomPoster = () => {
     `the-man-with-the-golden-arm.jpg`,
   ];
 
-  const getRandomPoster = `../images/posters/` + posters[getRandomInteger(0, posters.length - 1)];
+  const getRandomPoster = `./images/posters/` + posters[getRandomInteger(0, posters.length - 1)];
 
   return getRandomPoster;
 };
@@ -88,7 +87,6 @@ const createGenre = () => {
     ` Drama`,
     ` Fantasy`,
   ];
-  // const randomGenres = [];
   let randomGenresSet = new Set();
   let counter = getRandomInteger(1, 2);
   for (let i = 0; i < counter; i++) {
@@ -131,7 +129,6 @@ const createRandomComments = () => {
   for (let i = 0; i < counter; i++) {
     randomComments.push(randomComment());
   }
-
   return randomComments;
 };
 
@@ -155,7 +152,6 @@ const createRandomDirector = () => {
     `Christopher Nolan`,
     `David Lynch`
   ];
-
   return directors[getRandomInteger(0, directors.length - 1)];
 };
 
@@ -188,6 +184,7 @@ const createRandomActors = () => {
   }
 
   const randomActors = Array.from(randomActorsSet);
+
   return randomActors;
 };
 
@@ -201,6 +198,7 @@ const createTime = () => {
 const createReleaseDate = () => {
   const randomDay = getRandomInteger(1, 31);
   const randomMonth = getRandomInteger(1, 12);
+
   return dayjs(randomMonth + `/` + randomDay).format(`D MMMM`);
 };
 
@@ -231,4 +229,3 @@ export const generateFilmCard = () => {
     favorite: randomBoolean(),
   };
 };
-

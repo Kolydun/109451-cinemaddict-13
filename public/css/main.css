@@ -426,7 +426,6 @@ button {
   height: 0;
   justify-content: space-between;
   line-height: 50px;
-  overflow: hidden;
   padding: 10px 0;
   position: absolute;
   transition: height 0.1s ease-in;

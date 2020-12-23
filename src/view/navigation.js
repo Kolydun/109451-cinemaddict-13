@@ -1,4 +1,3 @@
-
 const filmsToFilterMap = {
   all: (cards) => cards.filter((card) => card.allFilms === true),
   watchlist: (cards) => cards.filter((card) => card.favorite === true).length,
@@ -14,7 +13,4 @@ export const navigationControls = (cards) => {
     };
   });
 };
-// const wishlistButtons = document.querySelectorAll(`.film-card__controls-item--add-to-watchlist`);
-// const watchedButtons = document.querySelectorAll(`.film-card__controls-item--mark-as-watched`);
-// const favouriteButtons = document.querySelectorAll(`.film-card__controls-item--favorite`);
-// film-card__controls-item--active
+
