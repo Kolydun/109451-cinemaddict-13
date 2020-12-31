@@ -1,6 +1,8 @@
-export const showMovieDetails = (card) => {
+import {createElement} from "./utils";
+
+const createPopupTemplate = (card) => {
   const {poster, title, originalTitle, rating, director, actors, time, country, description, year, release, genre, comments} = card;
-  return `<section class="film-details visually-hidden">
+  return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
       <div class="film-details__top-container">
         <div class="film-details__close">
@@ -115,3 +117,26 @@ export const showMovieDetails = (card) => {
     </form>
   </section>`;
 };
+
+export default class Popup {
+  constructor(cards) {
+    this._element = null;
+    this._cards = cards;
+  }
+
+  getTemplate() {
+    return createPopupTemplate(this._cards);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
