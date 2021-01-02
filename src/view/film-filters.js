@@ -1,3 +1,5 @@
+import {createElement} from "./utils";
+
 const createMenuItemTemplate = (filter) => {
   const {name, count} = filter;
   const isAll = name === `all`
@@ -22,7 +24,7 @@ const createMenuItemTemplate = (filter) => {
   );
 };
 
-export const menu = (filterItems) => {
+const createMenuTemplate = (filterItems) => {
   const filterItemsTemplate = filterItems
     .map((filter) => createMenuItemTemplate(filter))
     .join(``);
@@ -31,10 +33,28 @@ export const menu = (filterItems) => {
   ${filterItemsTemplate}
 </div>
 <a href="#stats" class="main-navigation__additional">Stats</a>
-</nav>
-<ul class="sort">
-<li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
-<li><a href="#" class="sort__button">Sort by date</a></li>
-<li><a href="#" class="sort__button">Sort by rating</a></li>
-</ul>`;
+</nav>`;
 };
+
+export default class SiteMenu {
+  constructor(filters) {
+    this._filters = filters;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMenuTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

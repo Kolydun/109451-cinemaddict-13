@@ -1,4 +1,6 @@
-export const createComments = (card) => {
+import {createElement} from "./utils";
+
+const createCommentsTemplate = (card) => {
   const {emoji, text, author, date} = card;
   return `<li class="film-details__comment">
               <span class="film-details__comment-emoji">
@@ -14,3 +16,26 @@ export const createComments = (card) => {
               </div>
             </li>`;
 };
+
+export default class FilmComment {
+  constructor(card) {
+    this._element = null;
+    this._card = card;
+  }
+
+  getTemplate() {
+    return createCommentsTemplate(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
