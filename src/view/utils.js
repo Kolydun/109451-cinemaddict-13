@@ -11,18 +11,21 @@ export const RenderPosition = {
   AFTEREND: `afterend`
 };
 
+const handler = {
+  [RenderPosition.AFTEREND]: (container, element) => {
+    container.after(element);
+  },
+  [RenderPosition.BEFOREEND]: (container, element) => {
+    container.append(element);
+  },
+  [RenderPosition.AFTERBEGIN]: (container, element) => {
+    container.prepend(element);
+  },
+};
+
 export const render = (container, element, place) => {
-  switch (place) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RenderPosition.BEFOREEND:
-      container.append(element);
-      break;
-    case RenderPosition.AFTEREND:
-      container.prepend(element);
-      break;
-  }
+  const handleRender = handler[place] || handler[RenderPosition.BEFOREEND];
+  handleRender(container, element);
 };
 
 export const createElement = (template) => {
