@@ -37,6 +37,12 @@ if (FILM_CARDS_COUNT < 1) {
   const filmsListContainer = document.querySelector(`.films-list__container`);
   const filmsList = document.querySelector(`.films-list`);
 
+  const createFilmList = (container, card) => {
+    for (let i = 0; i < FILMS_NUMBER_PER_STEP; i++) {
+      renderSmallCard(container, card[i]);
+    }
+  };
+
   const renderSmallCard = (place, film) => {
     const smallCard = new FilmCard(film);
     const posters = smallCard.getElement().querySelector(`.film-card__poster`);
@@ -49,29 +55,23 @@ if (FILM_CARDS_COUNT < 1) {
   const popupControls = (posters, title, film, comments) => {
     const popup = new Popup(film);
 
-    posters.addEventListener(`click`, function () {
-      addPopup(popup, film);
-    });
-    title.addEventListener(`click`, function () {
-      addPopup(popup, film);
-    });
-    comments.addEventListener(`click`, function () {
-      addPopup(popup, film);
+    filmsList.addEventListener(`click`, function (evt) {
+      if (evt.target === posters || evt.target === title || evt.target === comments) {
+        addPopup(popup, film);
+      }
     });
   };
 
-  for (let i = 0; i < FILMS_NUMBER_PER_STEP; i++) {
-    renderSmallCard(filmsListContainer, filmCards[i]);
-  }
-
   const addPopup = (popup, film) => {
     const popupCloseButton = popup.getElement().querySelector(`.film-details__close-btn`);
+
     const removeChildElement = () => {
       popupCloseButton.removeEventListener(`click`, removeChildElement);
       pageFooter.removeChild(popup.getElement());
     };
+
     const onEscKeydown = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
+      if (evt.key === `Escape`) {
         evt.preventDefault();
         window.removeEventListener(`keydown`, onEscKeydown);
         removeChildElement(pageFooter, popup);
@@ -105,5 +105,6 @@ if (FILM_CARDS_COUNT < 1) {
     }
   });
 
+  createFilmList(filmsListContainer, filmCards);
   cardsFiltersAdd();
 }
