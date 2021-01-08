@@ -1,4 +1,4 @@
-import {createElement} from "./utils";
+import Abstract from "./abstract";
 
 const createCommentsTemplate = (card) => {
   const {emoji, text, author, date} = card;
@@ -17,25 +17,13 @@ const createCommentsTemplate = (card) => {
             </li>`;
 };
 
-export default class FilmComment {
+export default class FilmComment extends Abstract {
   constructor(card) {
-    this._element = null;
+    super();
     this._card = card;
   }
 
   getTemplate() {
     return createCommentsTemplate(this._card);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

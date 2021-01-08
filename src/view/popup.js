@@ -1,4 +1,4 @@
-import {createElement} from "./utils";
+import Abstract from "./abstract";
 
 const createPopupTemplate = (card) => {
   const {poster, title, originalTitle, rating, director, actors, time, country, description, year, release, genre, comments} = card;
@@ -118,25 +118,27 @@ const createPopupTemplate = (card) => {
   </section>`;
 };
 
-export default class Popup {
+export default class Popup extends Abstract {
   constructor(cards) {
-    this._element = null;
+    super();
     this._cards = cards;
+    this._addPopupCloseButtonHandler = this._addPopupCloseButtonHandler.bind(this);
   }
 
   getTemplate() {
     return createPopupTemplate(this._cards);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _addPopupCloseButtonHandler() {
+    this._callback.click();
   }
 
-  removeElement() {
-    this._element = null;
+  setPopupCloseButtonHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._addPopupCloseButtonHandler);
+  }
+
+  deletePopupCloseButtonHandler() {
+    this.getElement().querySelector(`.film-details__close-btn`).removeEventListener(`click`, this._addPopupCloseButtonHandler);
   }
 }
