@@ -9,7 +9,7 @@ import {generateFilmCard} from "./view/mock/film-information-mock";
 import FilmComment from "./view/comments";
 import {cardsFiltersAdd} from "./view/cards-filters-controls";
 import {navigationControls} from "./view/navigation";
-import SortList from "./view/sort-menu";
+import SortList from "./view/sort-list";
 import NoFilms from "./view/no-films-window";
 import {render, RenderPosition} from "./view/utils";
 
@@ -32,7 +32,8 @@ render(pageMain, new SiteMenu(filters).getElement(), RenderPosition.AFTERBEGIN);
 if (FILM_CARDS_COUNT < 1) {
   render(pageMain, new NoFilms().getElement(), RenderPosition.BEFOREEND);
 } else {
-  render(pageMain, new FilmContainer().getElement(), RenderPosition.BEFOREEND);
+  const filmContainer = new FilmContainer();
+  render(pageMain, filmContainer.getElement(), RenderPosition.BEFOREEND);
 
   const filmsListContainer = document.querySelector(`.films-list__container`);
   const filmsList = document.querySelector(`.films-list`);
@@ -45,17 +46,18 @@ if (FILM_CARDS_COUNT < 1) {
 
   const renderSmallCard = (place, film) => {
     const smallCard = new FilmCard(film);
-    const posters = smallCard.getElement().querySelector(`.film-card__poster`);
-    const title = smallCard.getElement().querySelector(`.film-card__title`);
-    const comments = smallCard.getElement().querySelector(`.film-card__comments`);
     render(place, smallCard.getElement(), RenderPosition.BEFOREEND);
-    popupControls(posters, title, film, comments);
+
+    popupControls(film, smallCard);
   };
 
-  const popupControls = (posters, title, film, comments) => {
+  const popupControls = (film, card) => {
     const popup = new Popup(film);
+    const posters = card.getElement().querySelector(`.film-card__poster`);
+    const title = card.getElement().querySelector(`.film-card__title`);
+    const comments = card.getElement().querySelector(`.film-card__comments`);
 
-    filmsList.addEventListener(`click`, function (evt) {
+    card.setAddPopupHandler((evt) => {
       if (evt.target === posters || evt.target === title || evt.target === comments) {
         addPopup(popup, film);
       }
@@ -63,10 +65,9 @@ if (FILM_CARDS_COUNT < 1) {
   };
 
   const addPopup = (popup, film) => {
-    const popupCloseButton = popup.getElement().querySelector(`.film-details__close-btn`);
 
     const removeChildElement = () => {
-      popupCloseButton.removeEventListener(`click`, removeChildElement);
+      popup.deletePopupCloseButtonHandler();
       pageFooter.removeChild(popup.getElement());
     };
 
@@ -81,7 +82,9 @@ if (FILM_CARDS_COUNT < 1) {
     pageFooter.appendChild(popup.getElement());
     window.addEventListener(`keydown`, onEscKeydown);
     commentsAdd(popup, film);
-    popupCloseButton.addEventListener(`click`, removeChildElement);
+    popup.setPopupCloseButtonHandler(() => {
+      removeChildElement();
+    });
   };
 
   const commentsAdd = (element, film) => {
@@ -91,17 +94,18 @@ if (FILM_CARDS_COUNT < 1) {
     }
   };
 
-  render(filmsList, new ShowMore().getElement(), RenderPosition.BEFOREEND);
+  const showMoreButton = new ShowMore();
 
-  const showMoreButton = document.querySelector(`.films-list__show-more`);
+  render(filmsList, showMoreButton.getElement(), RenderPosition.BEFOREEND);
 
-  showMoreButton.addEventListener(`click`, function () {
+  showMoreButton.setClickHandler(() => {
     const filmCardsNumber = document.querySelectorAll(`.film-card`).length;
     for (let i = 0; i < FILMS_NUMBER_PER_STEP; i++) {
       renderSmallCard(filmsListContainer, filmCards[i + filmCardsNumber]);
     }
     if (filmCardsNumber + FILMS_NUMBER_PER_STEP >= FILM_CARDS_COUNT) {
-      showMoreButton.classList.add(`visually-hidden`);
+      showMoreButton.getElement().classList.add(`visually-hidden`);
+      showMoreButton.deleteClickHandler();
     }
   });
 

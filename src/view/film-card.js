@@ -1,4 +1,4 @@
-import {createElement} from "./utils";
+import Abstract from "./abstract";
 
 const createFilmCardTemplate = (card) => {
   const {title, poster, description, year, time, genre, rating, comments, watchlist, alreadyWatched, favorite} = card;
@@ -41,25 +41,27 @@ const createFilmCardTemplate = (card) => {
 };
 
 
-export default class FilmCard {
+export default class FilmCard extends Abstract {
   constructor(card) {
-    this._element = null;
+    super();
     this._card = card;
+    this._addPopupHandler = this._addPopupHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmCardTemplate(this._card);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _addPopupHandler(evt) {
+    this._callback.click(evt);
   }
 
-  removeElement() {
-    this._element = null;
+  setAddPopupHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().addEventListener(`click`, this._addPopupHandler);
+  }
+
+  deleteAddPopupHandler() {
+    this.getElement().removeEventListener(`click`, this._addPopupHandler);
   }
 }

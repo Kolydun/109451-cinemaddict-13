@@ -1,4 +1,4 @@
-import {createElement} from "./utils";
+import Abstract from "./abstract";
 
 const createAllFilmsNumberTemplate = (array) => {
   return `<section class="footer__statistics">
@@ -6,25 +6,13 @@ const createAllFilmsNumberTemplate = (array) => {
   </section>`;
 };
 
-export default class FilmsNumber {
+export default class FilmsNumber extends Abstract {
   constructor(array) {
-    this._element = null;
+    super();
     this._array = array;
   }
 
   getTemplate() {
     return createAllFilmsNumberTemplate(this._array);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
