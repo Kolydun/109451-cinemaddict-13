@@ -36,7 +36,7 @@ const createMenuTemplate = (filterItems) => {
 </nav>`;
 };
 
-export default class SiteMenu extends Abstract {
+export default class FilmsFilters extends Abstract {
   constructor(filters) {
     super();
     this._filters = filters;
