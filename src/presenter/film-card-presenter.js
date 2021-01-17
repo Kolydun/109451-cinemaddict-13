@@ -21,7 +21,6 @@ export default class FilmCardPresenter {
   init(card) {
     const prevFilmCard = this._filmCardComponent;
     const prevPopup = this._popupComponent;
-    console.log(card.isFavorites);
 
     this._filmCard = card;
     this._filmCardComponent = new FilmCard(card);
@@ -80,7 +79,7 @@ export default class FilmCardPresenter {
     const removeChildElement = () => {
       this._popupComponent.deletePopupCloseButtonHandler();
       window.removeEventListener(`keydown`, onEscKeydown);
-      this._footer.removeChild(this._popupComponent.getElement());
+      remove(this._popupComponent);
     };
 
     const onEscKeydown = (evt) => {
@@ -93,7 +92,7 @@ export default class FilmCardPresenter {
 
     if (!isReload) {
       window.addEventListener(`keydown`, onEscKeydown);
-    };
+    }
 
     this._popupComponent.setPopupCloseButtonHandler(() => {
       removeChildElement();
@@ -125,39 +124,14 @@ export default class FilmCardPresenter {
   }
 
   _handleFavoritesClick() {
-    this._changeData(
-      Object.assign(
-        {},
-        this._filmCard,
-        {
-          isFavorites: !this._filmCard.isFavorites,
-        },
-      ),
-    );
+    this._changeData(Object.assign({}, this._filmCard, {isFavorites: !this._filmCard.isFavorites}));
   }
 
   _handleHistoryClick() {
-    this._changeData(
-      Object.assign(
-        {},
-        this._filmCard,
-        {
-          isHistory: !this._filmCard.isHistory,
-        },
-      ),
-    );
+    this._changeData(Object.assign({}, this._filmCard, {isHistory: !this._filmCard.isHistory}));
   }
 
   _handleWatchlistClick() {
-    this._changeData(
-      Object.assign(
-        {},
-        this._filmCard,
-        {
-          isWatchlist: !this._filmCard.isWatchlist,
-        },
-      ),
-    );
+    this._changeData(Object.assign({}, this._filmCard, {isWatchlist: !this._filmCard.isWatchlist}));
   }
-
 }
