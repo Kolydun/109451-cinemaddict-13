@@ -1,7 +1,8 @@
+import dayjs from "dayjs";
 import Abstract from "./abstract";
 
 const createFilmCardTemplate = (card) => {
-  const {title, poster, description, year, time, genre, rating, comments, isWatchlist, isHistory, isFavorites} = card;
+  const {title, poster, description, release, time, genre, rating, comments, isWatchlist, isHistory, isFavorites} = card;
 
   const isFavorite = isFavorites === true
     ? `film-card__controls-item--active`
@@ -19,7 +20,7 @@ const createFilmCardTemplate = (card) => {
           <h3 class="film-card__title">${title}</h3>
           <p class="film-card__rating">${rating}</p>
           <p class="film-card__info">
-            <span class="film-card__year">${year}</span>
+            <span class="film-card__year">${dayjs(release).format(`YYYY`)}</span>
             <span class="film-card__duration">${time}</span>
             <span class="film-card__genre">${genre}</span>
           </p>

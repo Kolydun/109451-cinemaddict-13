@@ -1,7 +1,7 @@
 import Abstract from "./abstract";
 
 const createPopupTemplate = (card) => {
-  const {poster, title, originalTitle, rating, director, actors, time, country, description, year, release, genre, comments, isWatchlist, isHistory, isFavorites} = card;
+  const {poster, title, originalTitle, rating, director, actors, time, country, description, release, genre, comments, isWatchlist, isHistory, isFavorites} = card;
 
   const isFavorite = isFavorites === true
     ? `film-card__controls-item--active`
@@ -56,7 +56,7 @@ const createPopupTemplate = (card) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${release + ` ` + year}</td>
+                <td class="film-details__cell">${release}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
