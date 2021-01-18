@@ -202,13 +202,7 @@ const randomBoolean = () => {
 };
 
 const createRandomId = () => {
-  return getRandomInteger(0, 9)
-    + ``
-    + getRandomInteger(0, 9)
-    + ``
-    + getRandomInteger(0, 9)
-    + ``
-    + getRandomInteger(0, 9);
+  return Date.now() + parseInt(Math.random() * 10000, 10);
 };
 
 export const generateFilmCard = () => {
@@ -229,9 +223,9 @@ export const generateFilmCard = () => {
     actors: createRandomActors(),
     release: createReleaseDate(),
     allFilms: true,
-    watchlist: randomBoolean(),
-    alreadyWatched: randomBoolean(),
     watchingDate: getDate(),
-    favorite: randomBoolean(),
+    isWatchlist: randomBoolean(),
+    isHistory: randomBoolean(),
+    isFavorites: randomBoolean(),
   };
 };

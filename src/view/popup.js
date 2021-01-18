@@ -1,8 +1,22 @@
 import Abstract from "./abstract";
 
 const createPopupTemplate = (card) => {
-  const {poster, title, originalTitle, rating, director, actors, time, country, description, year, release, genre, comments} = card;
+  const {poster, title, originalTitle, rating, director, actors, time, country, description, year, release, genre, comments, isWatchlist, isHistory, isFavorites} = card;
+
+  const isFavorite = isFavorites === true
+    ? `film-card__controls-item--active`
+    : ``;
+
+  const isAlreadyWatched = isHistory === true
+    ? `film-card__controls-item--active`
+    : ``;
+
+  const isOnWatchlist = isWatchlist === true
+    ? `film-card__controls-item--active`
+    : ``;
+
   return `<section class="film-details">
+<div style="position: absolute; left:0; top:0; bottom:0; width: 100%"></div>
     <form class="film-details__inner" action="" method="get">
       <div class="film-details__top-container">
         <div class="film-details__close">
@@ -69,13 +83,13 @@ const createPopupTemplate = (card) => {
 
         <section class="film-details__controls">
           <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
-            <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
+            <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist ${isOnWatchlist}">Add to watchlist</label>
 
             <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched">
-              <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
+              <label for="watched" class="film-details__control-label film-details__control-label--watched ${isAlreadyWatched}">Already watched</label>
 
               <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
-                <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
+                <label for="favorite" class="film-details__control-label film-details__control-label--favorite ${isFavorite}">Add to favorites</label>
         </section>
       </div>
 
@@ -122,7 +136,23 @@ export default class Popup extends Abstract {
   constructor(cards) {
     super();
     this._cards = cards;
+
     this._addPopupCloseButtonHandler = this._addPopupCloseButtonHandler.bind(this);
+    this._favouritesClickHandler = this._favouritesClickHandler.bind(this);
+    this._historyClickHandler = this._historyClickHandler.bind(this);
+    this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
+  }
+
+  _favouritesClickHandler() {
+    this._callback.favouritesClick();
+  }
+
+  _historyClickHandler() {
+    this._callback.historyClick();
+  }
+
+  _watchlistClickHandler() {
+    this._callback.watchlistClick();
   }
 
   getTemplate() {
@@ -131,6 +161,24 @@ export default class Popup extends Abstract {
 
   _addPopupCloseButtonHandler() {
     this._callback.click();
+  }
+
+  setFavoritesClickHandler(callback) {
+    this._callback.favouritesClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--favorite`)
+      .addEventListener(`click`, this._favouritesClickHandler);
+  }
+
+  setHistoryClickHandler(callback) {
+    this._callback.historyClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--watched`)
+      .addEventListener(`click`, this._historyClickHandler);
+  }
+
+  setWatchlistClickHandler(callback) {
+    this._callback.watchlistClick = callback;
+    this.getElement().querySelector(`.film-details__control-label--watchlist`)
+      .addEventListener(`click`, this._watchlistClickHandler);
   }
 
   setPopupCloseButtonHandler(callback) {
