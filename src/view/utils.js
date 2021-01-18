@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import Abstract from "../view/abstract.js";
 
 export const getRandomInteger = (a = 0, b = 1) => {
@@ -76,4 +77,40 @@ export const updateItem = (items, update) => {
     update,
     ...items.slice(index + 1)
   ];
+};
+
+const getWeightForNullParameter = (parameterA, parameterB) => {
+  if (parameterA === null && parameterB === null) {
+    return 0;
+  }
+
+  if (parameterA === null) {
+    return 1;
+  }
+
+  if (parameterB === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+export const sortDateUp = (taskA, taskB) => {
+  const weight = getWeightForNullParameter(taskA.release, taskB.release);
+
+  if (weight !== null) {
+    return weight;
+  }
+
+  return dayjs(taskB.release).diff(dayjs(taskA.release));
+};
+
+export const sortRatingUp = (taskA, taskB) => {
+  const weight = getWeightForNullParameter(taskA.rating, taskB.rating);
+
+  if (weight !== null) {
+    return weight;
+  }
+
+  return (taskB.rating) - (taskA.rating);
 };

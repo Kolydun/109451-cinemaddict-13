@@ -39,22 +39,6 @@ const createTitle = () => {
   return filmTitles[randomNameNumber];
 };
 
-const createRandomYear = () => {
-  const filmYears = [
-    `2000`,
-    `1997`,
-    `2010`,
-    `1990`,
-    `2005`,
-    `1996`,
-    `2015`
-  ];
-  const randomYearIndex = getRandomInteger(0, filmYears.length - 1);
-
-  return filmYears[randomYearIndex];
-
-};
-
 const createRating = () => getRandomInteger(0, 10);
 
 const createRandomPoster = () => {
@@ -191,10 +175,22 @@ const createTime = () => {
 };
 
 const createReleaseDate = () => {
+  const filmYears = [
+    `2000`,
+    `1997`,
+    `2010`,
+    `1990`,
+    `2005`,
+    `1996`,
+    `2015`
+  ];
+
+  const randomYearIndex = getRandomInteger(0, filmYears.length - 1);
+  const randomYear = filmYears[randomYearIndex];
   const randomDay = getRandomInteger(1, 31);
   const randomMonth = getRandomInteger(1, 12);
 
-  return dayjs(randomMonth + `/` + randomDay).format(`D MMMM`);
+  return dayjs(randomMonth + `/` + randomDay + `/` + randomYear).format(`D MMMM YYYY`);
 };
 
 const randomBoolean = () => {
@@ -212,7 +208,7 @@ export const generateFilmCard = () => {
     poster: createRandomPoster(),
     description: createDescription(),
     comments: createRandomComments(),
-    year: createRandomYear(),
+    release: createReleaseDate(),
     rating: createRating(),
     time: createTime(),
     genre: createGenre(),
@@ -221,7 +217,6 @@ export const generateFilmCard = () => {
     director: createRandomDirector(),
     screenwriter: createRandomScreenwriter(),
     actors: createRandomActors(),
-    release: createReleaseDate(),
     allFilms: true,
     watchingDate: getDate(),
     isWatchlist: randomBoolean(),

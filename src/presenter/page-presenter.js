@@ -4,10 +4,11 @@ import FilmsNumber from "../view/film-counter";
 import SortList from "../view/sort-list";
 import NoFilms from "../view/no-films-window";
 import FilmCardPresenter from "./film-card-presenter";
-import {render, RenderPosition, remove, updateItem} from "../view/utils";
-import {navigationControls} from "../view/navigation";
 import FilmsContainer from "../view/films-container";
 import ShowMore from "../view/show-more";
+import {SortType} from "../view/sort-list";
+import {render, RenderPosition, remove, updateItem, sortRatingUp, sortDateUp} from "../view/utils";
+import {navigationControls} from "../view/navigation";
 
 export default class PagePresenter {
   constructor(header, main, footer, cardsNumber, cardsPerStep) {
@@ -17,8 +18,10 @@ export default class PagePresenter {
     this._cardsNumber = cardsNumber;
     this.cardsPerStep = cardsPerStep;
     this._filmPresenter = {};
+    this._currentSortType = SortType.DEFAULT;
 
     this._handleFilmChange = this._handleFilmChange.bind(this);
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
     this._userRatingComponent = new UserRating();
     this._noFilmsComponent = new NoFilms();
@@ -29,6 +32,7 @@ export default class PagePresenter {
 
   init(cards) {
     this._filmCards = cards.slice();
+    this._sourcedPageType = cards.slice();
 
     this._renderPage();
   }
@@ -39,11 +43,13 @@ export default class PagePresenter {
 
   _renderSortList() {
     render(this._main, this._sortListComponent, RenderPosition.AFTERBEGIN);
+    this._sortListComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderFilters() {
     this._filters = navigationControls(this._filmCards);
-    render(this._main, new FilmsFilters(this._filters), RenderPosition.AFTERBEGIN);
+    this._filmFilters = new FilmsFilters(this._filters);
+    render(this._main, this._filmFilters, RenderPosition.AFTERBEGIN);
   }
 
   _renderFilmsContainer() {
@@ -68,12 +74,7 @@ export default class PagePresenter {
     this._filmPresenter[card.id] = filmListPresenter;
   }
 
-  _renderPage() {
-    this._renderUserRating();
-    this._renderSortList();
-    this._renderFilters();
-    this._renderFilmsNumber();
-
+  _renderFilmList() {
     if (this._filmCards.length < 1) {
       this._renderNoFilms();
     } else {
@@ -84,6 +85,14 @@ export default class PagePresenter {
       this._renderShowMore();
       this._showMoreButtonClickHandler();
     }
+  }
+
+  _renderPage() {
+    this._renderUserRating();
+    this._renderSortList();
+    this._renderFilters();
+    this._renderFilmsNumber();
+    this._renderFilmList();
   }
 
   _showMoreButtonClickHandler() {
@@ -102,6 +111,8 @@ export default class PagePresenter {
   _handleFilmChange(updatedCard) {
     this._filmCards = updateItem(this._filmCards, updatedCard);
     this._filmPresenter[updatedCard.id].init(updatedCard);
+    remove(this._filmFilters);
+    this._renderFilters();
   }
 
   _clearFilmList() {
@@ -110,5 +121,30 @@ export default class PagePresenter {
       .forEach((presenter) => presenter.destroy());
     this._filmPresenter = {};
     remove(this._showMoreComponent);
+  }
+
+  _sortFilms(sortType) {
+    switch (sortType) {
+      case SortType.DATE_UP:
+        this._filmCards.sort(sortDateUp);
+        break;
+      case SortType.RATING_UP:
+        this._filmCards.sort(sortRatingUp);
+        break;
+      default:
+        this._filmCards = this._sourcedPageType.slice();
+    }
+
+    this._currentSortType = sortType;
+  }
+
+  _handleSortTypeChange(sortType) {
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortFilms(sortType);
+    this._clearFilmList();
+    this._renderFilmList();
   }
 }
