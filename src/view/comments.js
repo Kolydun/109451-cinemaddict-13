@@ -1,4 +1,4 @@
-import Abstract from "./abstract";
+import Component from "./component";
 
 const createCommentsTemplate = (card) => {
   const {emoji, text, author, date} = card;
@@ -17,7 +17,7 @@ const createCommentsTemplate = (card) => {
             </li>`;
 };
 
-export default class FilmComment extends Abstract {
+export default class FilmComment extends Component {
   constructor(card) {
     super();
     this._card = card;

@@ -1,4 +1,4 @@
-import Abstract from "./abstract";
+import Component from "./component";
 
 const createFilmContainerTemplate = () => {
   return `<section class="films">
@@ -9,7 +9,7 @@ const createFilmContainerTemplate = () => {
    </section>`;
 };
 
-export default class FilmContainer extends Abstract {
+export default class FilmContainer extends Component {
   constructor() {
     super();
   }

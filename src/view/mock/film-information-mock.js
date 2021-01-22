@@ -221,6 +221,6 @@ export const generateFilmCard = () => {
     watchingDate: getDate(),
     isWatchlist: randomBoolean(),
     isHistory: randomBoolean(),
-    isFavorites: randomBoolean(),
+    isFavorite: randomBoolean(),
   };
 };

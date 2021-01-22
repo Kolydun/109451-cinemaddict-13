@@ -1,18 +1,18 @@
 import dayjs from "dayjs";
-import Abstract from "./abstract";
+import Component from "./component";
 
 const createFilmCardTemplate = (card) => {
-  const {title, poster, description, release, time, genre, rating, comments, isWatchlist, isHistory, isFavorites} = card;
+  const {title, poster, description, release, time, genre, rating, comments, isWatchlist, isHistory, isFavorite} = card;
 
-  const isFavorite = isFavorites === true
+  const favoriteAddedClass = isFavorite
     ? `film-card__controls-item--active`
     : ``;
 
-  const isAlreadyWatched = isHistory === true
+  const historyAddedClass = isHistory
     ? `film-card__controls-item--active`
     : ``;
 
-  const isOnWatchlist = isWatchlist === true
+  const watchlistAddedClass = isWatchlist
     ? `film-card__controls-item--active`
     : ``;
 
@@ -28,13 +28,13 @@ const createFilmCardTemplate = (card) => {
           <p class="film-card__description">${description}</p>
           <a class="film-card__comments">${comments.length}</a>
           <div class="film-card__controls">
-            <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${isOnWatchlist}" type="button">
+            <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${watchlistAddedClass}" type="button">
             Add to watchlist
             </button>
-            <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${isAlreadyWatched}" type="button">
+            <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${historyAddedClass}" type="button">
             Mark as watched
             </button>
-            <button class="film-card__controls-item button film-card__controls-item--favorite ${isFavorite}" type="button">
+            <button class="film-card__controls-item button film-card__controls-item--favorite ${favoriteAddedClass}" type="button">
             Mark as favorite
             </button>
           </div>
@@ -42,12 +42,12 @@ const createFilmCardTemplate = (card) => {
 };
 
 
-export default class FilmCard extends Abstract {
+export default class FilmCard extends Component {
   constructor(card) {
     super();
     this._card = card;
 
-    this._favouritesClickHandler = this._favouritesClickHandler.bind(this);
+    this._favouriteClickHandler = this._favouriteClickHandler.bind(this);
     this._historyClickHandler = this._historyClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._addPopupHandler = this._addPopupHandler.bind(this);
@@ -57,7 +57,7 @@ export default class FilmCard extends Abstract {
     return createFilmCardTemplate(this._card);
   }
 
-  _favouritesClickHandler() {
+  _favouriteClickHandler() {
     this._callback.favouritesClick();
   }
 
@@ -76,7 +76,7 @@ export default class FilmCard extends Abstract {
   setFavoritesClickHandler(callback) {
     this._callback.favouritesClick = callback;
     this.getElement().querySelector(`.film-card__controls-item--favorite`)
-      .addEventListener(`click`, this._favouritesClickHandler);
+      .addEventListener(`click`, this._favouriteClickHandler);
   }
 
   setHistoryClickHandler(callback) {

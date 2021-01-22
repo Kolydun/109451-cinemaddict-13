@@ -1,10 +1,12 @@
-import Abstract from "./abstract";
+import Component from "./component";
 
 export const SortType = {
   DEFAULT: `default`,
   RATING_UP: `rating-up`,
   DATE_UP: `date-up`
 };
+
+const TAG_A = `A`;
 
 const createSortListTemplate = () => {
   return `<ul class="sort">
@@ -14,7 +16,7 @@ const createSortListTemplate = () => {
 </ul>`;
 };
 
-export default class SortList extends Abstract {
+export default class SortList extends Component {
   constructor() {
     super();
 
@@ -32,7 +34,7 @@ export default class SortList extends Abstract {
   }
 
   _sortTypeChangeHandler(evt) {
-    if (evt.target.tagName !== `A`) {
+    if (evt.target.tagName !== TAG_A) {
       return;
     }
 

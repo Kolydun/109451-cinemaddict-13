@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import Abstract from "../view/abstract.js";
+import Component from "./component.js";
 
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -39,11 +39,11 @@ export const createElement = (template) => {
 };
 
 export const replace = (newChild, oldChild) => {
-  if (oldChild instanceof Abstract) {
+  if (oldChild instanceof Component) {
     oldChild = oldChild.getElement();
   }
 
-  if (newChild instanceof Abstract) {
+  if (newChild instanceof Component) {
     newChild = newChild.getElement();
   }
 
@@ -57,7 +57,7 @@ export const replace = (newChild, oldChild) => {
 };
 
 export const remove = (component) => {
-  if (!(component instanceof Abstract)) {
+  if (!(component instanceof Component)) {
     throw new Error(`Can remove only components`);
   }
 

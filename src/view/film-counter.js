@@ -1,4 +1,4 @@
-import Abstract from "./abstract";
+import Component from "./component";
 
 const createAllFilmsNumberTemplate = (array) => {
   return `<section class="footer__statistics">
@@ -6,7 +6,7 @@ const createAllFilmsNumberTemplate = (array) => {
   </section>`;
 };
 
-export default class FilmsNumber extends Abstract {
+export default class FilmsNumber extends Component {
   constructor(array) {
     super();
     this._array = array;

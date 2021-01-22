@@ -1,4 +1,4 @@
-import Abstract from "./abstract";
+import Component from "./component";
 
 const createUserRatingTemplate = () => {
   return `<section class="header__profile profile">
@@ -7,7 +7,7 @@ const createUserRatingTemplate = () => {
   </section>`;
 };
 
-export default class UserRating extends Abstract {
+export default class UserRating extends Component {
   getTemplate() {
     return createUserRatingTemplate();
   }

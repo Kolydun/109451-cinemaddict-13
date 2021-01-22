@@ -57,7 +57,8 @@ export default class PagePresenter {
   }
 
   _renderShowMore() {
-    render(this._filmsContainerComponent.getElement().querySelector(`.films-list`), this._showMoreComponent, RenderPosition.BEFOREEND);
+    const filmsList = this._filmsContainerComponent.getElement().querySelector(`.films-list`);
+    render(filmsList, this._showMoreComponent, RenderPosition.BEFOREEND);
   }
 
   _renderFilmsNumber() {
@@ -102,7 +103,6 @@ export default class PagePresenter {
         this._renderFilmCard(this._filmCards[i + filmCardsNumber]);
       }
       if (filmCardsNumber + this.cardsPerStep >= this._cardsNumber) {
-        // this._showMoreComponent.deleteClickHandler();
         remove(this._showMoreComponent);
       }
     });
