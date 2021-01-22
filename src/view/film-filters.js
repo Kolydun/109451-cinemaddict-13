@@ -1,4 +1,4 @@
-import Abstract from "./abstract";
+import Component from "./component";
 
 const createMenuItemTemplate = (filter) => {
   const {name, count} = filter;
@@ -36,7 +36,7 @@ const createMenuTemplate = (filterItems) => {
 </nav>`;
 };
 
-export default class FilmsFilters extends Abstract {
+export default class FilmsFilters extends Component {
   constructor(filters) {
     super();
     this._filters = filters;

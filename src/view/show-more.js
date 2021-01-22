@@ -1,10 +1,10 @@
-import Abstract from "./abstract";
+import Component from "./component";
 
 const createShowMoreButtonTemplate = () => {
   return `<button class="films-list__show-more">Show more</button>`;
 };
 
-export default class ShowMore extends Abstract {
+export default class ShowMore extends Component {
   constructor() {
     super();
     this._clickHandler = this._clickHandler.bind(this);
