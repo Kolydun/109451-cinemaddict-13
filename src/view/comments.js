@@ -8,7 +8,7 @@ const createCommentsTemplate = (card) => {
 
   const commentDate = (commentTime) => {
     return dayjs(commentTime).fromNow();
-  }
+  };
 
   return `<li class="film-details__comment">
               <span class="film-details__comment-emoji">
