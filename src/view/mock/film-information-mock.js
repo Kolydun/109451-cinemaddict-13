@@ -167,13 +167,6 @@ const createRandomActors = () => {
   return randomActors;
 };
 
-const createTime = () => {
-  const minutes = getRandomInteger(0, 59);
-  const hours = getRandomInteger(1, 3);
-
-  return hours + `h` + ` ` + (minutes < 10 ? `0` : ``) + minutes + `m`;
-};
-
 const createReleaseDate = () => {
   const filmYears = [
     `2000`,
@@ -210,7 +203,7 @@ export const generateFilmCard = () => {
     comments: createRandomComments(),
     release: createReleaseDate(),
     rating: createRating(),
-    time: createTime(),
+    time: getRandomInteger(60, 210),
     genre: createGenre(),
     country: createRandomCountry(),
     originalTitle: createTitle(),
