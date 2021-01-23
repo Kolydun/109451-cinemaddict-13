@@ -1,3 +1,6 @@
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+dayjs.extend(duration);
 import Smart from "./smart";
 import {render, RenderPosition} from "./utils";
 import FilmComment from "./comments";
@@ -16,6 +19,11 @@ const createPopupTemplate = (data) => {
   const watchlistAddedClass = isWatchlist
     ? `film-card__controls-item--active`
     : ``;
+
+  const runTime = (runTimeInMinutes) => {
+    const runTimeDuration = dayjs.duration(runTimeInMinutes, `minute`);
+    return runTimeDuration.format(`H`) + `h ` + runTimeDuration.format(`mm`) + `m`;
+  };
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -57,7 +65,7 @@ const createPopupTemplate = (data) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${time}</td>
+                <td class="film-details__cell">${runTime(time)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
