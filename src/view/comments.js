@@ -26,12 +26,12 @@ const createCommentsTemplate = (card) => {
 };
 
 export default class FilmComment extends Component {
-  constructor(card) {
+  constructor(comment) {
     super();
-    this._card = card;
+    this._comment = comment;
   }
 
   getTemplate() {
-    return createCommentsTemplate(this._card);
+    return createCommentsTemplate(this._comment);
   }
 }

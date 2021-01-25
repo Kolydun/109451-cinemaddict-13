@@ -1,12 +1,15 @@
+import he from "he";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 dayjs.extend(duration);
 import Smart from "./smart";
-import {render, RenderPosition} from "./utils";
+import {render} from "../utils/utils";
+import {RenderPosition} from "../utils/const";
 import FilmComment from "./comments";
 
 const createPopupTemplate = (data) => {
   const {poster, title, originalTitle, rating, director, actors, time, country, description, release, genre, comments, isFavorite, isHistory, isWatchlist, userEmoji, userCommentText} = data;
+
 
   const favoriteAddedClass = isFavorite
     ? `film-card__controls-item--active`
@@ -100,7 +103,7 @@ const createPopupTemplate = (data) => {
           <div class="film-details__new-comment">
             <div class="film-details__add-emoji-label">${userEmoji}</div>
             <label class="film-details__comment-label">
-              <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${userCommentText}</textarea>
+              <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(userCommentText)}</textarea>
             </label>
             <div class="film-details__emoji-list">
               <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
@@ -132,6 +135,8 @@ export default class Popup extends Smart {
     super();
     this._data = Popup.parseCardToData(card);
 
+    console.log(card.comments);
+
     this._addPopupCloseButtonHandler = this._addPopupCloseButtonHandler.bind(this);
     this._favouritesClickHandler = this._favouritesClickHandler.bind(this);
     this._historyClickHandler = this._historyClickHandler.bind(this);
@@ -143,12 +148,21 @@ export default class Popup extends Smart {
     this._sleepingEmojiClickHandler = this._sleepingEmojiClickHandler.bind(this);
     this._commentTextHandler = this._commentTextHandler.bind(this);
 
+    // this._commentDeleteButtonHandler = this._commentDeleteButtonHandler.bind(this);
+
     this._setInnerHandlers();
   }
 
   reset(card) {
     this.updateData(Popup.parseCardToData(card));
   }
+
+  // _commentDeleteButtonHandler(evt) {
+  //   const targetCommentId = evt.target.id;
+  //   if (targetCommentId === evt.target.id) {
+  //     this.removeElement(comment);
+  //   }
+  // }
 
   addComment() {
     for (let i = 0; i < this._data.comments.length; i++) {
@@ -159,6 +173,7 @@ export default class Popup extends Smart {
   renderComment(comment) {
     const commentsContainer = this.getElement().querySelector(`.film-details__comments-list`);
     render(commentsContainer, new FilmComment(comment), RenderPosition.AFTERBEGIN);
+    console.log(new FilmComment(comment));
   }
 
   _commentTextHandler(evt) {

@@ -1,13 +1,23 @@
 import {generateFilmCard} from "./view/mock/film-information-mock";
 import PagePresenter from "./presenter/page-presenter";
+import MoviesModel from "./model/movies";
+import FiltersModel from "./model/filters";
+import FiltersPresenter from "./presenter/filters-presenter";
 
-const FILMS_NUMBER_PER_STEP = 5;
 const FILM_CARDS_COUNT = 20;
 
 const pageHeader = document.querySelector(`.header`);
 const pageMain = document.querySelector(`.main`);
 const pageFooter = document.querySelector(`.footer`);
 const filmCards = new Array(FILM_CARDS_COUNT).fill().map(generateFilmCard);
-const pagePresenter = new PagePresenter(pageHeader, pageMain, pageFooter, FILM_CARDS_COUNT, FILMS_NUMBER_PER_STEP);
 
-pagePresenter.init(filmCards);
+const moviesModel = new MoviesModel();
+moviesModel.setMovies(filmCards);
+
+const filtersModel = new FiltersModel();
+
+const pagePresenter = new PagePresenter(pageHeader, pageMain, pageFooter, moviesModel, filtersModel);
+const filtersPresenter = new FiltersPresenter(pageMain, filtersModel, moviesModel);
+
+filtersPresenter.init();
+pagePresenter.init();

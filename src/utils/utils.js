@@ -1,17 +1,12 @@
 import dayjs from "dayjs";
-import Component from "./component.js";
+import Component from "../view/component.js";
+import {RenderPosition, FilterType} from "../utils/const";
 
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
 
   return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
-export const RenderPosition = {
-  AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`,
-  AFTEREND: `afterend`
 };
 
 const handler = {
@@ -57,26 +52,16 @@ export const replace = (newChild, oldChild) => {
 };
 
 export const remove = (component) => {
+  if (component === null) {
+    return;
+  }
+
   if (!(component instanceof Component)) {
     throw new Error(`Can remove only components`);
   }
 
   component.getElement().remove();
   component.removeElement();
-};
-
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1)
-  ];
 };
 
 const getWeightForNullParameter = (parameterA, parameterB) => {
@@ -113,4 +98,11 @@ export const sortRatingUp = (taskA, taskB) => {
   }
 
   return (taskB.rating) - (taskA.rating);
+};
+
+export const filter = {
+  [FilterType.ALL]: (cards) => cards.filter((card) => card.allFilms === true),
+  [FilterType.WATCHLIST]: (cards) => cards.filter((card) => card.isWatchlist === true),
+  [FilterType.HISTORY]: (cards) => cards.filter((card) => card.isHistory === true),
+  [FilterType.FAVORITES]: (cards) => cards.filter((card) => card.isFavorite === true)
 };

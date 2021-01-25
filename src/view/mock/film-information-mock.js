@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {getRandomInteger} from "../utils";
+import {getRandomInteger} from "../../utils/utils";
 
 const createDescription = () => {
   const descriptions = [
@@ -98,7 +98,6 @@ const randomComment = () => {
     emoji: `./images/emoji/` + getEmoji() + `.png`,
     author: `Посетитель`,
     date: getDate(),
-    deleteButton: null
   };
 };
 

@@ -1,7 +1,7 @@
 import Popup from "../view/popup";
 import FilmCard from "../view/film-card";
-// import FilmComment from "../view/comments";
-import {render, RenderPosition, replace, remove} from "../view/utils";
+import {render, replace, remove} from "../utils/utils";
+import {RenderPosition, UserAction, UpdateType} from "../utils/const";
 
 export default class FilmCardPresenter {
   constructor(footer, filmListContainer, changeData) {
@@ -33,6 +33,8 @@ export default class FilmCardPresenter {
     this._popupComponent.setPopupFavoritesClickHandler(this._handleFavoritesClick);
     this._popupComponent.setPopupHistoryClickHandler(this._handleHistoryClick);
     this._popupComponent.setPopupWatchlistClickHandler(this._handleWatchlistClick);
+
+    // this._popupComponent.setCommentDeleteButtonHandler(this._handleCommentDeleteButtonClick);
 
     if (prevFilmCard === null) {
       this._renderFilmCard();
@@ -122,14 +124,30 @@ export default class FilmCardPresenter {
   }
 
   _handleFavoritesClick() {
-    this._changeData(Object.assign({}, this._filmCard, {isFavorite: !this._filmCard.isFavorite}));
+    this._changeData(
+        UserAction.UPDATE,
+        UpdateType.MINOR,
+        Object.assign({}, this._filmCard, {isFavorite: !this._filmCard.isFavorite}));
   }
 
   _handleHistoryClick() {
-    this._changeData(Object.assign({}, this._filmCard, {isHistory: !this._filmCard.isHistory}));
+    this._changeData(
+        UserAction.UPDATE,
+        UpdateType.MINOR,
+        Object.assign({}, this._filmCard, {isHistory: !this._filmCard.isHistory}));
   }
 
   _handleWatchlistClick() {
-    this._changeData(Object.assign({}, this._filmCard, {isWatchlist: !this._filmCard.isWatchlist}));
+    this._changeData(
+        UserAction.UPDATE,
+        UpdateType.MINOR,
+        Object.assign({}, this._filmCard, {isWatchlist: !this._filmCard.isWatchlist}));
   }
+
+  // _handleCommentDeleteButtonClick(element) {
+  //   this._changeData(
+  //       UserAction.DELETE_COMMENT,
+  //       UpdateType.PATCH,
+  //       Object.assign({}, this._filmCard, {comments: remove(element)}));
+  // }
 }

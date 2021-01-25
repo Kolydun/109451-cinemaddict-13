@@ -1,55 +1,52 @@
 import UserRating from "../view/user-rating";
-import FilmsFilters from "../view/film-filters";
 import FilmsNumber from "../view/film-counter";
 import SortList from "../view/sort-list";
 import NoFilms from "../view/no-films-window";
 import FilmCardPresenter from "./film-card-presenter";
 import FilmsContainer from "../view/films-container";
 import ShowMore from "../view/show-more";
-import {SortType} from "../view/sort-list";
-import {render, RenderPosition, remove, updateItem, sortRatingUp, sortDateUp} from "../view/utils";
-import {navigationControls} from "../view/navigation";
+import {render, remove, sortRatingUp, sortDateUp, filter} from "../utils/utils";
+import {UserAction, UpdateType, SortType, RenderPosition} from "../utils/const";
+
+const FILMS_NUMBER_PER_STEP = 5;
 
 export default class PagePresenter {
-  constructor(header, main, footer, cardsNumber, cardsPerStep) {
+  constructor(header, main, footer, moviesModel, filtersModel) {
+    this._moviesModel = moviesModel;
+    this._filtersModel = filtersModel;
     this._header = header;
     this._main = main;
     this._footer = footer;
-    this._cardsNumber = cardsNumber;
-    this.cardsPerStep = cardsPerStep;
+    this._renderedCardsCount = FILMS_NUMBER_PER_STEP;
     this._filmPresenter = {};
     this._currentSortType = SortType.DEFAULT;
 
-    this._handleFilmChange = this._handleFilmChange.bind(this);
+    this._noFilmsComponent = new NoFilms();
+    this._filmsContainerComponent = new FilmsContainer();
+
+    // this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._userRatingComponent = new UserRating();
-    this._noFilmsComponent = new NoFilms();
-    this._sortListComponent = new SortList();
-    this._filmsContainerComponent = new FilmsContainer();
-    this._showMoreComponent = new ShowMore();
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
+
+    this._moviesModel.addObserver(this._handleModelEvent);
+    this._filtersModel.addObserver(this._handleModelEvent);
   }
 
-  init(cards) {
-    this._filmCards = cards.slice();
-    this._sourcedPageType = cards.slice();
-
+  init() {
     this._renderPage();
   }
 
   _renderUserRating() {
+    this._userRatingComponent = new UserRating();
     render(this._header, this._userRatingComponent, RenderPosition.BEFOREEND);
   }
 
   _renderSortList() {
-    render(this._main, this._sortListComponent, RenderPosition.AFTERBEGIN);
+    this._sortListComponent = new SortList(this._currentSortType);
     this._sortListComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
-  }
-
-  _renderFilters() {
-    this._filters = navigationControls(this._filmCards);
-    this._filmFilters = new FilmsFilters(this._filters);
-    render(this._main, this._filmFilters, RenderPosition.AFTERBEGIN);
+    render(this._main, this._sortListComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderFilmsContainer() {
@@ -57,12 +54,15 @@ export default class PagePresenter {
   }
 
   _renderShowMore() {
+    this._showMoreComponent = new ShowMore();
     const filmsList = this._filmsContainerComponent.getElement().querySelector(`.films-list`);
     render(filmsList, this._showMoreComponent, RenderPosition.BEFOREEND);
+    this._handleShowMoreButtonClick();
   }
 
   _renderFilmsNumber() {
-    render(this._footer, new FilmsNumber(this._filmCards), RenderPosition.BEFOREEND);
+    this._filmsNumberComponent = new FilmsNumber(this._getMovies());
+    render(this._footer, this._filmsNumberComponent, RenderPosition.BEFOREEND);
   }
 
   _renderNoFilms() {
@@ -70,81 +70,142 @@ export default class PagePresenter {
   }
 
   _renderFilmCard(card) {
-    const filmListPresenter = new FilmCardPresenter(this._footer, this._filmsContainerComponent, this._handleFilmChange);
-    filmListPresenter.init(card);
-    this._filmPresenter[card.id] = filmListPresenter;
+    const filmCardPresenter = new FilmCardPresenter(this._footer, this._filmsContainerComponent, this._handleViewAction);
+    filmCardPresenter.init(card);
+    this._filmPresenter[card.id] = filmCardPresenter;
   }
 
-  _renderFilmList() {
-    if (this._filmCards.length < 1) {
-      this._renderNoFilms();
-    } else {
-      this._renderFilmsContainer();
-      for (let i = 0; i < this.cardsPerStep; i++) {
-        this._renderFilmCard(this._filmCards[i]);
-      }
-      this._renderShowMore();
-      this._showMoreButtonClickHandler();
-    }
+  _renderFilmList(cards) {
+    cards.forEach((card) => this._renderFilmCard(card));
   }
 
   _renderPage() {
+    const cards = this._getMovies();
+    const cardsCount = cards.length;
+
     this._renderUserRating();
     this._renderSortList();
-    this._renderFilters();
     this._renderFilmsNumber();
-    this._renderFilmList();
+
+    if (cardsCount === 0) {
+      this._renderNoFilms();
+    } else {
+      this._renderFilmsContainer();
+      this._renderFilmList(cards.slice(0, Math.min(cardsCount, this._renderedCardsCount)));
+
+      if (cardsCount > this._renderedCardsCount) {
+        this._renderShowMore();
+      }
+    }
   }
 
-  _showMoreButtonClickHandler() {
+  _handleShowMoreButtonClick() {
     this._showMoreComponent.setClickHandler(() => {
-      const filmCardsNumber = document.querySelectorAll(`.film-card`).length;
-      for (let i = 0; i < this.cardsPerStep; i++) {
-        this._renderFilmCard(this._filmCards[i + filmCardsNumber]);
-      }
-      if (filmCardsNumber + this.cardsPerStep >= this._cardsNumber) {
+      const cardsCount = this._getMovies().length;
+      const newRenderedCardsCount = Math.min(cardsCount, this._renderedCardsCount + FILMS_NUMBER_PER_STEP);
+      const cards = this._getMovies().slice(this._renderedCardsCount, newRenderedCardsCount);
+
+      this._renderFilmList(cards);
+
+      this._renderedCardsCount = newRenderedCardsCount;
+
+      if (this._renderedCardsCount >= cardsCount) {
         remove(this._showMoreComponent);
       }
     });
   }
 
-  _handleFilmChange(updatedCard) {
-    this._filmCards = updateItem(this._filmCards, updatedCard);
-    this._filmPresenter[updatedCard.id].init(updatedCard);
-    remove(this._filmFilters);
-    this._renderFilters();
+  _handleViewAction(actionType, updateType, update) {
+    switch (actionType) {
+      case UserAction.UPDATE:
+        this._moviesModel.updateMovie(updateType, update);
+        break;
+      case UserAction.ADD_COMMENT:
+        this._moviesModel.updateMovie(updateType, update);
+        //Насколько я понимаю, тут я должен удалить нужный комментарий из this._moviesModel.comments
+        break;
+      case UserAction.DELETE_COMMENT:
+        this._moviesModel.updateMovie(updateType, update);
+        //А тут я должен добавить нужный комментарий в this._moviesModel.comments
+        break;
+    }
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
   }
 
-  _clearFilmList() {
+  _handleModelEvent(updateType, data) {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this._filmPresenter[data.id].init(data);
+        // - обновить часть списка (например, когда поменялось описание)
+        break;
+      case UpdateType.MINOR:
+        this._filmPresenter[data.id].init(data);
+        this._clearPage();
+        this._renderPage();
+        // - обновить список (например, когда задача ушла в архив)
+        break;
+      case UpdateType.MAJOR:
+        this._clearPage({resetRenderedCardsCount: true, resetSortType: false});
+        this._renderPage();
+        // - обновить всю доску (например, при переключении фильтра)
+        break;
+    }
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялось описание)
+    // - обновить список (например, когда задача ушла в архив)
+    // - обновить всю доску (например, при переключении фильтра)
+  }
+
+  _getMovies() {
+    const filterType = this._filtersModel.getFilter();
+    const cards = this._moviesModel.getMovies();
+    const filteredCards = filter[filterType](cards);
+
+    switch (this._currentSortType) {
+      case SortType.DATE_UP:
+        return filteredCards.sort(sortDateUp);
+      case SortType.RATING_UP:
+        return filteredCards.sort(sortRatingUp);
+    }
+
+    return filteredCards;
+  }
+
+  _clearPage({resetRenderedCardsCount = false, resetSortType = false} = {}) {
+    const moviesCount = this._getMovies().length;
+
     Object
       .values(this._filmPresenter)
       .forEach((presenter) => presenter.destroy());
     this._filmPresenter = {};
-    remove(this._showMoreComponent);
-  }
 
-  _sortFilms(sortType) {
-    switch (sortType) {
-      case SortType.DATE_UP:
-        this._filmCards.sort(sortDateUp);
-        break;
-      case SortType.RATING_UP:
-        this._filmCards.sort(sortRatingUp);
-        break;
-      default:
-        this._filmCards = this._sourcedPageType.slice();
+    remove(this._showMoreComponent);
+    remove(this._sortListComponent);
+    remove(this._userRatingComponent);
+    remove(this._filmsNumberComponent);
+
+    if (resetRenderedCardsCount) {
+      this._renderedCardsCount = FILMS_NUMBER_PER_STEP;
+    } else {
+      this._renderedCardsCount = Math.min(moviesCount, this._renderedCardsCount);
     }
 
-    this._currentSortType = sortType;
+    if (resetSortType) {
+      this._currentSortType = SortType.DEFAULT;
+    }
   }
+
 
   _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {
       return;
     }
 
-    this._sortFilms(sortType);
-    this._clearFilmList();
-    this._renderFilmList();
+    this._currentSortType = sortType;
+    this._clearPage({resetRenderedCardsCount: true});
+    this._renderPage();
   }
 }
