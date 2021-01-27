@@ -1,43 +1,36 @@
-import Popup from "../view/popup";
+
 import FilmCard from "../view/film-card";
 import {render, replace, remove} from "../utils/utils";
 import {RenderPosition, UserAction, UpdateType} from "../utils/const";
+import PopupPresenter from "./popup-presenter";
 
 export default class FilmCardPresenter {
-  constructor(footer, filmListContainer, changeData) {
+  constructor(footer, filmListContainer, changeData, commentsModel) {
+    this._commentsModel = commentsModel;
     this._footer = footer;
     this._filmListContainer = filmListContainer;
     this._changeData = changeData;
 
     this._filmCardComponent = null;
-    this._popupComponent = null;
 
     this._handleFavoritesClick = this._handleFavoritesClick.bind(this);
     this._handleHistoryClick = this._handleHistoryClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
-    this._closePopupControlsHandler = this._closePopupControlsHandler.bind(this);
+    // this._closePopupControlsHandler = this._closePopupControlsHandler.bind(this);
   }
 
   init(card) {
     const prevFilmCard = this._filmCardComponent;
-    const prevPopup = this._popupComponent;
 
     this._filmCard = card;
     this._filmCardComponent = new FilmCard(card);
-    this._popupComponent = new Popup(card);
 
     this._filmCardComponent.setFavoritesClickHandler(this._handleFavoritesClick);
     this._filmCardComponent.setHistoryClickHandler(this._handleHistoryClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
 
-    this._popupComponent.setPopupFavoritesClickHandler(this._handleFavoritesClick);
-    this._popupComponent.setPopupHistoryClickHandler(this._handleHistoryClick);
-    this._popupComponent.setPopupWatchlistClickHandler(this._handleWatchlistClick);
-
-    // this._popupComponent.setCommentDeleteButtonHandler(this._handleCommentDeleteButtonClick);
-
     if (prevFilmCard === null) {
-      this._renderFilmCard();
+      this._renderSmallCard();
       return;
     }
 
@@ -46,14 +39,7 @@ export default class FilmCardPresenter {
       this._openPopupControls();
     }
 
-    if (this._footer.contains(prevPopup.getElement())) {
-      replace(this._popupComponent, prevPopup);
-      this._closePopupControlsHandler(true);
-      this._popupComponent.addComment();
-    }
-
     remove(prevFilmCard);
-    remove(prevPopup);
   }
 
   destroy() {
@@ -66,41 +52,6 @@ export default class FilmCardPresenter {
     this._openPopupControls();
   }
 
-  _addPopup() {
-    this._footer.appendChild(this._popupComponent.getElement());
-    this._popupComponent.addComment();
-    this._closePopupControlsHandler();
-  }
-
-  _closePopupControlsHandler(isReload) {
-    const removeChildElement = () => {
-      this._popupComponent.reset(this._filmCard);
-      this._popupComponent.deletePopupCloseButtonHandler();
-      window.removeEventListener(`keydown`, onEscKeydown);
-      remove(this._popupComponent);
-    };
-
-    const onEscKeydown = (evt) => {
-      if (evt.key === `Escape`) {
-        evt.preventDefault();
-        window.removeEventListener(`keydown`, onEscKeydown);
-        removeChildElement();
-      }
-    };
-
-    if (!isReload) {
-      window.addEventListener(`keydown`, onEscKeydown);
-      this._popupComponent.restoreHandlers();
-    }
-
-    this._popupComponent.setPopupCloseButtonHandler(() => {
-      removeChildElement();
-    });
-    this._popupComponent.setPopupFavoritesClickHandler(this._handleFavoritesClick);
-    this._popupComponent.setPopupHistoryClickHandler(this._handleHistoryClick);
-    this._popupComponent.setPopupWatchlistClickHandler(this._handleWatchlistClick);
-  }
-
   _openPopupControls() {
     const posters = this._filmCardComponent.getElement().querySelector(`.film-card__poster`);
     const title = this._filmCardComponent.getElement().querySelector(`.film-card__title`);
@@ -110,17 +61,19 @@ export default class FilmCardPresenter {
       const popup = this._footer.querySelector(`.film-details`);
       if (evt.target === posters || evt.target === title || evt.target === comments) {
         if (!popup) {
-          this._addPopup();
+          this._renderPopup();
         } else {
-          replace(this._popupComponent, popup);
-          this._addPopup();
+          this._footer.removeChild(popup);
+          this._renderPopup();
         }
       }
     });
   }
 
-  _renderFilmCard() {
-    this._renderSmallCard();
+  _renderPopup() {
+    this._commentsModel.setComments(this._filmCard.comments);
+    this._popupPresenter = new PopupPresenter(this._footer, this._changeData, this._commentsModel);
+    this._popupPresenter.init(this._filmCard);
   }
 
   _handleFavoritesClick() {
@@ -143,11 +96,4 @@ export default class FilmCardPresenter {
         UpdateType.MINOR,
         Object.assign({}, this._filmCard, {isWatchlist: !this._filmCard.isWatchlist}));
   }
-
-  // _handleCommentDeleteButtonClick(element) {
-  //   this._changeData(
-  //       UserAction.DELETE_COMMENT,
-  //       UpdateType.PATCH,
-  //       Object.assign({}, this._filmCard, {comments: remove(element)}));
-  // }
 }

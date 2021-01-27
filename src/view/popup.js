@@ -2,14 +2,32 @@ import he from "he";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 dayjs.extend(duration);
-import Smart from "./smart";
-import {render} from "../utils/utils";
-import {RenderPosition} from "../utils/const";
-import FilmComment from "./comments";
+import Smart from "../utils/smart";
+import {getDate} from "../utils/utils";
+import {createRandomId} from "./mock/film-information-mock";
+import {ENTER} from "../utils/const";
 
 const createPopupTemplate = (data) => {
-  const {poster, title, originalTitle, rating, director, actors, time, country, description, release, genre, comments, isFavorite, isHistory, isWatchlist, userEmoji, userCommentText} = data;
+  const {poster, title, originalTitle, rating, director, actors, time, country, description, release, genre, isFavorite, isHistory, isWatchlist, userEmoji, userCommentText, commentsNumber} = data;
 
+  function emojiNameRule() {
+    let altName = null;
+    if (userEmoji === `./images/emoji/angry.png`) {
+      altName = `angry`;
+    } else if (userEmoji === `./images/emoji/smile.png`) {
+      altName = `smile`;
+    } else if (userEmoji === `./images/emoji/puke.png`) {
+      altName = `puke`;
+    } else {
+      altName = `sleeping`;
+    }
+
+    return altName;
+  }
+
+  const emojiAdded = userEmoji
+    ? `<img src="${userEmoji}" width="55" height="55" alt="emoji-${emojiNameRule()}">`
+    : ``;
 
   const favoriteAddedClass = isFavorite
     ? `film-card__controls-item--active`
@@ -98,10 +116,10 @@ const createPopupTemplate = (data) => {
       </div>
       <div class="film-details__bottom-container">
         <section class="film-details__comments-wrap">
-          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
+          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsNumber}</span></h3>
           <ul class="film-details__comments-list"></ul>
           <div class="film-details__new-comment">
-            <div class="film-details__add-emoji-label">${userEmoji}</div>
+            <div class="film-details__add-emoji-label">${emojiAdded}</div>
             <label class="film-details__comment-label">
               <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(userCommentText)}</textarea>
             </label>
@@ -131,11 +149,10 @@ const createPopupTemplate = (data) => {
 };
 
 export default class Popup extends Smart {
-  constructor(card) {
+  constructor(card, commentsModel) {
     super();
-    this._data = Popup.parseCardToData(card);
-
-    console.log(card.comments);
+    this._comments = commentsModel.getComments();
+    this._data = Popup.parseCardToData(card, this._comments);
 
     this._addPopupCloseButtonHandler = this._addPopupCloseButtonHandler.bind(this);
     this._favouritesClickHandler = this._favouritesClickHandler.bind(this);
@@ -148,32 +165,16 @@ export default class Popup extends Smart {
     this._sleepingEmojiClickHandler = this._sleepingEmojiClickHandler.bind(this);
     this._commentTextHandler = this._commentTextHandler.bind(this);
 
-    // this._commentDeleteButtonHandler = this._commentDeleteButtonHandler.bind(this);
+    this._addCommentsCallback = this._addCommentsCallback.bind(this);
+
+    this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
+    this._onFormSubmitHandler = this._onFormSubmitHandler.bind(this);
 
     this._setInnerHandlers();
   }
 
   reset(card) {
-    this.updateData(Popup.parseCardToData(card));
-  }
-
-  // _commentDeleteButtonHandler(evt) {
-  //   const targetCommentId = evt.target.id;
-  //   if (targetCommentId === evt.target.id) {
-  //     this.removeElement(comment);
-  //   }
-  // }
-
-  addComment() {
-    for (let i = 0; i < this._data.comments.length; i++) {
-      this.renderComment(this._data.comments[i]);
-    }
-  }
-
-  renderComment(comment) {
-    const commentsContainer = this.getElement().querySelector(`.film-details__comments-list`);
-    render(commentsContainer, new FilmComment(comment), RenderPosition.AFTERBEGIN);
-    console.log(new FilmComment(comment));
+    this.updateData(Popup.parseDataToCard(card));
   }
 
   _commentTextHandler(evt) {
@@ -183,26 +184,60 @@ export default class Popup extends Smart {
 
   _angryEmojiClickHandler() {
     this.updateData({
-      userEmoji: `<img src="./images/emoji/angry.png" width="55" height="55" alt="emoji-angry">`,
+      userEmoji: `./images/emoji/angry.png`,
     });
   }
 
   _smileEmojiClickHandler() {
     this.updateData({
-      userEmoji: `<img src="./images/emoji/smile.png" width="55" height="55" alt="emoji-smile">`,
+      userEmoji: `./images/emoji/smile.png`,
     });
   }
 
   _pukeEmojiClickHandler() {
     this.updateData({
-      userEmoji: `<img src="./images/emoji/puke.png" width="55" height="55" alt="emoji-puke">`,
+      userEmoji: `./images/emoji/puke.png`,
     });
   }
 
   _sleepingEmojiClickHandler() {
     this.updateData({
-      userEmoji: `<img src="./images/emoji/sleeping.png" width="55" height="55" alt="emoji-sleeping">`,
+      userEmoji: `./images/emoji/sleeping.png`,
     });
+  }
+
+  _commentDeleteClickHandler(evt) {
+    evt.preventDefault();
+    const newCommentsNumber = this._callback.commentDeleteClick(evt.target.dataset.id);
+    this.updateData({
+      commentsNumber: newCommentsNumber,
+    });
+  }
+
+  _onFormSubmitHandler(evt) {
+    if (evt.keyCode === ENTER && (evt.ctrlKey || evt.metaKey)) {
+      const newComment = {
+        id: createRandomId(),
+        text: this._data.userCommentText,
+        emoji: this._data.userEmoji,
+        author: `Посетитель`,
+        date: getDate(),
+      };
+
+      // this._callback.onFormSubmit(newComment);
+
+      const newCommentsNumber = this._callback.onFormSubmit(newComment);
+
+      this.updateData({
+        userEmoji: ``,
+        userCommentText: ``,
+        commentsNumber: newCommentsNumber,
+      });
+    }
+  }
+
+  _addCommentsCallback() {
+    this._callback.addComments();
   }
 
   _favouritesClickHandler() {
@@ -217,20 +252,26 @@ export default class Popup extends Smart {
     this._callback.watchlistClick();
   }
 
+  _addPopupCloseButtonHandler() {
+    this._callback.closeClick();
+  }
+
   getTemplate() {
-    return createPopupTemplate(this._data);
+    return createPopupTemplate(this._data, this._comments);
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
-    this.setPopupCloseButtonHandler(this._callback.click);
+    this.setPopupCloseButtonHandler(this._callback.closeClick);
     this.setPopupFavoritesClickHandler(this._callback.favouritesClick);
     this.setPopupHistoryClickHandler(this._callback.historyClick);
     this.setPopupWatchlistClickHandler(this._callback.watchlistClick);
   }
 
   restoreAdditionalIElements() {
-    this.addComment();
+    this._addCommentsCallback();
+    this.setCommentDelete(this._callback.commentDeleteClick);
+    this.setOnFormSubmit(this._callback.onFormSubmit);
   }
 
   _setInnerHandlers() {
@@ -255,8 +296,21 @@ export default class Popup extends Smart {
       .addEventListener(`input`, this._commentTextHandler);
   }
 
-  _addPopupCloseButtonHandler() {
-    this._callback.click();
+  setOnFormSubmit(callback) {
+    this._callback.onFormSubmit = callback;
+    this.getElement().addEventListener(`keydown`, this._onFormSubmitHandler);
+  }
+
+  setCommentDelete(callback) {
+    this._callback.commentDeleteClick = callback;
+    const deleteButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    deleteButtons.forEach((button) => {
+      button.addEventListener(`click`, this._commentDeleteClickHandler);
+    });
+  }
+
+  setAddComments(callback) {
+    this._callback.addComments = callback;
   }
 
   setPopupFavoritesClickHandler(callback) {
@@ -278,7 +332,7 @@ export default class Popup extends Smart {
   }
 
   setPopupCloseButtonHandler(callback) {
-    this._callback.click = callback;
+    this._callback.closeClick = callback;
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._addPopupCloseButtonHandler);
   }
 
@@ -286,8 +340,8 @@ export default class Popup extends Smart {
     this.getElement().querySelector(`.film-details__close-btn`).removeEventListener(`click`, this._addPopupCloseButtonHandler);
   }
 
-  static parseCardToData(card) {
-    return Object.assign({}, card, {userEmoji: ``, userCommentText: ``});
+  static parseCardToData(card, comments) {
+    return Object.assign({}, card, {userEmoji: ``, userCommentText: ``, commentsNumber: comments.length});
   }
 
   static parseDataToCard(data) {

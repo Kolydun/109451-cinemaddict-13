@@ -2,6 +2,7 @@ import {generateFilmCard} from "./view/mock/film-information-mock";
 import PagePresenter from "./presenter/page-presenter";
 import MoviesModel from "./model/movies";
 import FiltersModel from "./model/filters";
+import CommentsModel from "./model/comments";
 import FiltersPresenter from "./presenter/filters-presenter";
 
 const FILM_CARDS_COUNT = 20;
@@ -16,7 +17,9 @@ moviesModel.setMovies(filmCards);
 
 const filtersModel = new FiltersModel();
 
-const pagePresenter = new PagePresenter(pageHeader, pageMain, pageFooter, moviesModel, filtersModel);
+const commentsModel = new CommentsModel();
+
+const pagePresenter = new PagePresenter(pageHeader, pageMain, pageFooter, moviesModel, filtersModel, commentsModel);
 const filtersPresenter = new FiltersPresenter(pageMain, filtersModel, moviesModel);
 
 filtersPresenter.init();

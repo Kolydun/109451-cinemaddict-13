@@ -11,9 +11,10 @@ import {UserAction, UpdateType, SortType, RenderPosition} from "../utils/const";
 const FILMS_NUMBER_PER_STEP = 5;
 
 export default class PagePresenter {
-  constructor(header, main, footer, moviesModel, filtersModel) {
+  constructor(header, main, footer, moviesModel, filtersModel, commentsModel) {
     this._moviesModel = moviesModel;
     this._filtersModel = filtersModel;
+    this._commentsModel = commentsModel;
     this._header = header;
     this._main = main;
     this._footer = footer;
@@ -24,7 +25,6 @@ export default class PagePresenter {
     this._noFilmsComponent = new NoFilms();
     this._filmsContainerComponent = new FilmsContainer();
 
-    // this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
     this._handleViewAction = this._handleViewAction.bind(this);
@@ -32,6 +32,7 @@ export default class PagePresenter {
 
     this._moviesModel.addObserver(this._handleModelEvent);
     this._filtersModel.addObserver(this._handleModelEvent);
+    this._commentsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -70,7 +71,7 @@ export default class PagePresenter {
   }
 
   _renderFilmCard(card) {
-    const filmCardPresenter = new FilmCardPresenter(this._footer, this._filmsContainerComponent, this._handleViewAction);
+    const filmCardPresenter = new FilmCardPresenter(this._footer, this._filmsContainerComponent, this._handleViewAction, this._commentsModel);
     filmCardPresenter.init(card);
     this._filmPresenter[card.id] = filmCardPresenter;
   }
@@ -121,42 +122,31 @@ export default class PagePresenter {
         this._moviesModel.updateMovie(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this._moviesModel.updateMovie(updateType, update);
-        //Насколько я понимаю, тут я должен удалить нужный комментарий из this._moviesModel.comments
+        this._commentsModel.addComment(updateType, update);
         break;
       case UserAction.DELETE_COMMENT:
-        this._moviesModel.updateMovie(updateType, update);
-        //А тут я должен добавить нужный комментарий в this._moviesModel.comments
+        this._commentsModel.deleteComment(updateType, update);
         break;
     }
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
   }
 
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
         this._filmPresenter[data.id].init(data);
-        // - обновить часть списка (например, когда поменялось описание)
         break;
       case UpdateType.MINOR:
         this._filmPresenter[data.id].init(data);
         this._clearPage();
         this._renderPage();
-        // - обновить список (например, когда задача ушла в архив)
         break;
       case UpdateType.MAJOR:
         this._clearPage({resetRenderedCardsCount: true, resetSortType: false});
         this._renderPage();
-        // - обновить всю доску (например, при переключении фильтра)
+        break;
+      case UpdateType.MAJOR_POPUP:
         break;
     }
-    // В зависимости от типа изменений решаем, что делать:
-    // - обновить часть списка (например, когда поменялось описание)
-    // - обновить список (например, когда задача ушла в архив)
-    // - обновить всю доску (например, при переключении фильтра)
   }
 
   _getMovies() {

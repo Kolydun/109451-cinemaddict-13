@@ -13,7 +13,8 @@ export const UserAction = {
 export const UpdateType = {
   PATCH: `PATCH`,
   MINOR: `MINOR`,
-  MAJOR: `MAJOR`
+  MAJOR: `MAJOR`,
+  MAJOR_POPUP: `MAJOR_POPUP`
 };
 
 export const RenderPosition = {
@@ -31,3 +32,4 @@ export const FilterType = {
   WATCHLIST: `Watchlist`
 };
 
+export const ENTER = 13;

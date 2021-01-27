@@ -51,7 +51,6 @@ export default class FilmsFilters extends Component {
   }
 
   _filterTypeClickHandler(evt) {
-    console.log(evt.target.id);
     this._callback.filterTypeClick(evt.target.id);
   }
 

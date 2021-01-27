@@ -106,3 +106,7 @@ export const filter = {
   [FilterType.HISTORY]: (cards) => cards.filter((card) => card.isHistory === true),
   [FilterType.FAVORITES]: (cards) => cards.filter((card) => card.isFavorite === true)
 };
+
+export const getDate = () => {
+  return dayjs().format(`YYYY-MM-DD HH:mm`);
+};
