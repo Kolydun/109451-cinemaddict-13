@@ -1,4 +1,4 @@
-import Component from "./component";
+import Component from "../view/component";
 
 export default class Smart extends Component {
   constructor() {

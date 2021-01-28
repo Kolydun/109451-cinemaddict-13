@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {getRandomInteger} from "../utils";
+import {getRandomInteger, getDate} from "../../utils/utils";
 
 const createDescription = () => {
   const descriptions = [
@@ -77,10 +77,6 @@ const createGenre = () => {
   return randomGenres;
 };
 
-const getDate = () => {
-  return dayjs().format(`YYYY-MM-DD HH:mm`);
-};
-
 const getEmoji = () => {
   const emojis = [
     `angry`,
@@ -94,11 +90,11 @@ const getEmoji = () => {
 
 const randomComment = () => {
   return {
+    id: createRandomId(),
     text: `Текст комментария, который в будущем будет заменен на что-то более осмысленное чем пустой текст`,
     emoji: `./images/emoji/` + getEmoji() + `.png`,
     author: `Посетитель`,
     date: getDate(),
-    deleteButton: null
   };
 };
 
@@ -190,7 +186,7 @@ const randomBoolean = () => {
   return Boolean(getRandomInteger(0, 1));
 };
 
-const createRandomId = () => {
+export const createRandomId = () => {
   return Date.now() + parseInt(Math.random() * 10000, 10);
 };
 
