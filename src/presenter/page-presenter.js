@@ -7,6 +7,7 @@ import FilmsContainer from "../view/films-container";
 import ShowMore from "../view/show-more";
 import {render, remove, sortRatingUp, sortDateUp, filter} from "../utils/utils";
 import {UserAction, UpdateType, SortType, RenderPosition} from "../utils/const";
+import Stats from "../view/stats";
 
 const FILMS_NUMBER_PER_STEP = 5;
 
@@ -40,7 +41,7 @@ export default class PagePresenter {
   }
 
   _renderUserRating() {
-    this._userRatingComponent = new UserRating();
+    this._userRatingComponent = new UserRating(this._getMovies());
     render(this._header, this._userRatingComponent, RenderPosition.BEFOREEND);
   }
 
@@ -54,6 +55,11 @@ export default class PagePresenter {
     render(this._main, this._filmsContainerComponent, RenderPosition.BEFOREEND);
   }
 
+  _renderStats() {
+    this._statsComponent = new Stats(this._getMovies());
+    render(this._main, this._statsComponent, RenderPosition.BEFOREEND);
+  }
+
   _renderShowMore() {
     this._showMoreComponent = new ShowMore();
     const filmsList = this._filmsContainerComponent.getElement().querySelector(`.films-list`);
@@ -62,7 +68,7 @@ export default class PagePresenter {
   }
 
   _renderFilmsNumber() {
-    this._filmsNumberComponent = new FilmsNumber(this._getMovies());
+    this._filmsNumberComponent = new FilmsNumber(this._moviesModel.getMovies());
     render(this._footer, this._filmsNumberComponent, RenderPosition.BEFOREEND);
   }
 
@@ -93,11 +99,14 @@ export default class PagePresenter {
     } else {
       this._renderFilmsContainer();
       this._renderFilmList(cards.slice(0, Math.min(cardsCount, this._renderedCardsCount)));
+      this._renderStats();
 
       if (cardsCount > this._renderedCardsCount) {
         this._renderShowMore();
       }
     }
+
+    // this.hideFilmsListHandler();
   }
 
   _handleShowMoreButtonClick() {
@@ -141,10 +150,17 @@ export default class PagePresenter {
         this._renderPage();
         break;
       case UpdateType.MAJOR:
+        this._statsComponent.hide();
+        this.showFilmListHandler();
         this._clearPage({resetRenderedCardsCount: true, resetSortType: false});
         this._renderPage();
         break;
       case UpdateType.MAJOR_POPUP:
+        break;
+      case UpdateType.STATS:
+        this._currentSortType = SortType.DEFAULT;
+        this.hideFilmListHandler();
+        this._statsComponent.visibility();
         break;
     }
   }
@@ -197,5 +213,20 @@ export default class PagePresenter {
     this._currentSortType = sortType;
     this._clearPage({resetRenderedCardsCount: true});
     this._renderPage();
+  }
+
+  hideFilmListHandler() {
+    if (this._filmsContainerComponent.getElement().classList.contains(`visually-hidden`)) {
+      this._filmsContainerComponent.getElement().classList.remove(`visually-hidden`);
+      this._sortListComponent.getElement().classList.remove(`visually-hidden`);
+    } else if (!this._filmsContainerComponent.getElement().classList.contains(`visually-hidden`)) {
+      this._filmsContainerComponent.getElement().classList.add(`visually-hidden`);
+      this._sortListComponent.getElement().classList.add(`visually-hidden`);
+    }
+  }
+
+  showFilmListHandler() {
+    this._filmsContainerComponent.getElement().classList.remove(`visually-hidden`);
+    this._sortListComponent.getElement().classList.remove(`visually-hidden`);
   }
 }

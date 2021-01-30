@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import Component from "../view/component.js";
-import {RenderPosition, FilterType} from "../utils/const";
+import {RenderPosition, FilterType, Rating} from "../utils/const";
 
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -104,9 +104,27 @@ export const filter = {
   [FilterType.ALL]: (cards) => cards.filter((card) => card.allFilms === true),
   [FilterType.WATCHLIST]: (cards) => cards.filter((card) => card.isWatchlist === true),
   [FilterType.HISTORY]: (cards) => cards.filter((card) => card.isHistory === true),
-  [FilterType.FAVORITES]: (cards) => cards.filter((card) => card.isFavorite === true)
+  [FilterType.FAVORITES]: (cards) => cards.filter((card) => card.isFavorite === true),
+  [FilterType.STATISTICS]: (cards) => cards.filter((card) => card.allFilms === true),
 };
 
 export const getDate = () => {
   return dayjs().format(`YYYY-MM-DD HH:mm`);
 };
+
+export function ratingRule(filmsArray) {
+  const watchedFilms = filmsArray.filter((film) => film.isHistory === true).length;
+
+  let rating = null;
+  if (watchedFilms <= Rating.NOVICE_RATING_TOP && watchedFilms > Rating.NO_RATING) {
+    rating = `Novice`;
+  } else if (watchedFilms <= Rating.FAN_RATING_TOP && watchedFilms >= Rating.FAN_RATING_BOTTOM) {
+    rating = `Fan`;
+  } else if (watchedFilms >= Rating.MOVIE_BUFF_RATING_BOTTOM) {
+    rating = `Movie buff`;
+  } else {
+    rating = ``;
+  }
+
+  return rating;
+}

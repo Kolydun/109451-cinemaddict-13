@@ -31,7 +31,7 @@ export default class Smart extends Component {
     parent.replaceChild(newElement, prevElement);
 
     this.restoreHandlers();
-    this.restoreAdditionalIElements();
+    this.restoreAdditionalElements();
 
     newElement.scrollTo(0, prevElementScrollY);
   }
@@ -40,7 +40,5 @@ export default class Smart extends Component {
     throw new Error(`Abstract method not implemented: resetHandlers`);
   }
 
-  restoreAdditionalIElements() {
-    throw new Error(`No additional information`);
-  }
+  restoreAdditionalElements() {}
 }

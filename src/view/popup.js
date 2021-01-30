@@ -1,11 +1,12 @@
 import he from "he";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
-dayjs.extend(duration);
 import Smart from "../utils/smart";
 import {getDate} from "../utils/utils";
 import {createRandomId} from "./mock/film-information-mock";
 import {ENTER} from "../utils/const";
+
+dayjs.extend(duration);
 
 const createPopupTemplate = (data) => {
   const {poster, title, originalTitle, rating, director, actors, time, country, description, release, genre, isFavorite, isHistory, isWatchlist, userEmoji, userCommentText, commentsNumber} = data;
@@ -268,7 +269,7 @@ export default class Popup extends Smart {
     this.setPopupWatchlistClickHandler(this._callback.watchlistClick);
   }
 
-  restoreAdditionalIElements() {
+  restoreAdditionalElements() {
     this._addCommentsCallback();
     this.setCommentDelete(this._callback.commentDeleteClick);
     this.setOnFormSubmit(this._callback.onFormSubmit);
@@ -279,18 +280,22 @@ export default class Popup extends Smart {
       .querySelector(`label[for="emoji-angry"]`)
       .querySelector(`img`)
       .addEventListener(`click`, this._angryEmojiClickHandler);
+
     this.getElement()
       .querySelector(`label[for="emoji-smile"]`)
       .querySelector(`img`)
       .addEventListener(`click`, this._smileEmojiClickHandler);
+
     this.getElement()
       .querySelector(`label[for="emoji-puke"]`)
       .querySelector(`img`)
       .addEventListener(`click`, this._pukeEmojiClickHandler);
+
     this.getElement()
       .querySelector(`label[for="emoji-sleeping"]`)
       .querySelector(`img`)
       .addEventListener(`click`, this._sleepingEmojiClickHandler);
+
     this.getElement()
       .querySelector(`.film-details__comment-input`)
       .addEventListener(`input`, this._commentTextHandler);
