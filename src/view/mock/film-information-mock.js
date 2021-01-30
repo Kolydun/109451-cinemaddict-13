@@ -101,10 +101,18 @@ const randomComment = () => {
 const createRandomComments = () => {
   const randomComments = [];
   const counter = getRandomInteger(0, 5);
+
   for (let i = 0; i < counter; i++) {
     randomComments.push(randomComment());
   }
   return randomComments;
+};
+
+const createWatchingDate = () => {
+  const randomDay = getRandomInteger(1, 31);
+  const randomMonth = getRandomInteger(1, 12);
+
+  return dayjs(randomMonth + `/` + randomDay + `/` + `2020`).format(`D MMMM YYYY`);
 };
 
 const createRandomCountry = () => {
@@ -207,7 +215,7 @@ export const generateFilmCard = () => {
     screenwriter: createRandomScreenwriter(),
     actors: createRandomActors(),
     allFilms: true,
-    watchingDate: getDate(),
+    watchingDate: createWatchingDate(),
     isWatchlist: randomBoolean(),
     isHistory: randomBoolean(),
     isFavorite: randomBoolean(),

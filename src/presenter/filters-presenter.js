@@ -40,7 +40,12 @@ export default class Filters {
   }
 
   _handleFilterTypeChange(filterType) {
-    if (this._currentFilter === filterType) {
+    if (this._currentFilter === filterType && this._currentFilter !== `Statistics`) {
+      return;
+    }
+
+    if (filterType === `Statistics`) {
+      this._filterModel.setFilter(UpdateType.STATS, filterType);
       return;
     }
 
@@ -70,7 +75,7 @@ export default class Filters {
         type: FilterType.FAVORITES,
         name: `Favorites`,
         count: filter[FilterType.FAVORITES](cards).length
-      }
+      },
     ];
   }
 }

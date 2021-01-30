@@ -1,5 +1,8 @@
 import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
 import Component from "./component";
+
+dayjs.extend(duration);
 
 const createFilmCardTemplate = (card) => {
   const {title, poster, description, release, time, genre, rating, comments, isWatchlist, isHistory, isFavorite} = card;

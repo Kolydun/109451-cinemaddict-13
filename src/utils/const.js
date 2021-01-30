@@ -14,7 +14,8 @@ export const UpdateType = {
   PATCH: `PATCH`,
   MINOR: `MINOR`,
   MAJOR: `MAJOR`,
-  MAJOR_POPUP: `MAJOR_POPUP`
+  MAJOR_POPUP: `MAJOR_POPUP`,
+  STATS: `STATS`
 };
 
 export const RenderPosition = {
@@ -29,7 +30,17 @@ export const FilterType = {
   ALL: `All`,
   FAVORITES: `Favorites`,
   HISTORY: `History`,
-  WATCHLIST: `Watchlist`
+  WATCHLIST: `Watchlist`,
+  STATISTICS: `Statistics`
 };
 
 export const ENTER = 13;
+
+export const Rating = {
+  NO_RATING: 0,
+  NOVICE_RATING_TOP: 10,
+  FAN_RATING_BOTTOM: 11,
+  FAN_RATING_TOP: 20,
+  MOVIE_BUFF_RATING_BOTTOM: 21
+};
+
