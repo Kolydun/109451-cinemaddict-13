@@ -142,16 +142,11 @@ export default class PagePresenter {
           this._moviesModel.updateMovie(updateType, response);
         });
         break;
-      case UserAction.ADD_COMMENT:
-        this._api.addCommentToServer(update).then((response) => {
-          this._commentsModel.addComment(updateType, response);
-        });
-        break;
-      case UserAction.DELETE_COMMENT:
-        this._api.deleteCommentFromServer(update).then(() => {
-          this._commentsModel.deleteComment(updateType, update);
-        });
-        break;
+      // case UserAction.ADD_COMMENT:
+      //   this._api.addCommentToServer(update).then((response) => {
+      //     this._commentsModel.addComment(updateType, response);
+      //   });
+      //   break;
     }
   }
 

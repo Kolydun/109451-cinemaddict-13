@@ -133,32 +133,42 @@ export default class PopupPresenter {
   }
 
   _handleCommentDeleteClick(commentIndex) {
-    this._changeData(
-        UserAction.DELETE_COMMENT,
-        UpdateType.MAJOR_POPUP,
-        // parseInt(commentIndex, 10)
-        commentIndex
-    );
-    // this._updateFilmCommentInfo();
+    this._api.deleteCommentFromServer(commentIndex).then(() => {
+      this._commentsModel.deleteComment(UpdateType.MAJOR_POPUP, commentIndex);
 
-    return this._commentsModel.getComments().length;
+      this._updateFilmCommentInfo();
+
+      this._popupComponent.updateData({
+        commentsNumber: this._commentsModel.getComments().length,
+      });
+    }).catch(() => {
+      this._popupComponent.updateElement();
+      this._popupComponent.shake();
+    });
   }
 
   _handleSubmitForm(newComment) {
-    this._changeData(
-        UserAction.ADD_COMMENT,
-        UpdateType.MAJOR_POPUP,
-        newComment
-    );
-    // this._updateFilmCommentInfo();
+    this._api.addCommentToServer(newComment, this._filmCard).then((response) => {
+      this._commentsModel.addComment(UpdateType.MAJOR_POPUP, response);
 
-    return this._commentsModel.getComments().length;
+      this._updateFilmCommentInfo();
+
+      this._popupComponent.updateData({
+        userEmoji: ``,
+        userCommentText: ``,
+        commentsNumber: this._commentsModel.getComments().length,
+      });
+    }).catch(() => {
+      this._popupComponent.updateElement();
+      this._popupComponent.shake();
+    });
   }
 
-//   _updateFilmCommentInfo() {
-//     this._changeData(
-//         UserAction.UPDATE,
-//         UpdateType.PATCH,
-//         Object.assign({}, this._filmCard, {comments: this._commentsModel.getComments().id}));
-//   }
+  _updateFilmCommentInfo() {
+
+    this._changeData(
+        UserAction.UPDATE,
+        UpdateType.PATCH,
+        Object.assign({}, this._filmCard, {comments: this._commentsModel.getComments().map((comment) => comment.id)}));
+  }
 }

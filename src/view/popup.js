@@ -2,7 +2,6 @@ import he from "he";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import Smart from "./smart";
-import {getDate} from "../utils/utils";
 import {ENTER} from "../utils/const";
 
 dayjs.extend(duration);
@@ -211,29 +210,23 @@ export default class Popup extends Smart {
 
   _commentDeleteClickHandler(evt) {
     evt.preventDefault();
-    const newCommentsNumber = this._callback.commentDeleteClick(evt.target.dataset.id);
-    console.log(newCommentsNumber);
-    this.updateData({
-      commentsNumber: newCommentsNumber,
-    });
+    this._callback.commentDeleteClick(evt.target.dataset.id);
+    evt.target.disabled = true;
+    evt.target.innerText = `Deleting...`;
   }
 
   _onFormSubmitHandler(evt) {
     if (evt.keyCode === ENTER && (evt.ctrlKey || evt.metaKey)) {
+      evt.target.closest(`form`).disabled = true;
+
       const newComment = {
         comment: this._data.userCommentText,
         emotion: this._data.userEmoji,
         author: `Посетитель`,
-        date: getDate(),
+        date: dayjs().format(),
       };
 
-      const newCommentsNumber = this._callback.onFormSubmit(newComment);
-
-      this.updateData({
-        userEmoji: ``,
-        userCommentText: ``,
-        commentsNumber: newCommentsNumber,
-      });
+      this._callback.onFormSubmit(newComment);
     }
   }
 
