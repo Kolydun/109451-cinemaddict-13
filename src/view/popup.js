@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import Smart from "./smart";
 import {getDate} from "../utils/utils";
-import {createRandomId} from "../utils/utils";
 import {ENTER} from "../utils/const";
 
 dayjs.extend(duration);
@@ -34,15 +33,15 @@ const createPopupTemplate = (data) => {
     : ``;
 
   const favoriteAddedClass = isFavorite
-    ? `film-card__controls-item--active`
+    ? `checked`
     : ``;
 
   const historyAddedClass = isHistory
-    ? `film-card__controls-item--active`
+    ? `checked`
     : ``;
 
   const watchlistAddedClass = isWatchlist
-    ? `film-card__controls-item--active`
+    ? `checked`
     : ``;
 
   const runTime = (runTimeInMinutes) => {
@@ -110,12 +109,12 @@ const createPopupTemplate = (data) => {
           </div>
         </div>
         <section class="film-details__controls">
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
-            <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist ${watchlistAddedClass}">Add to watchlist</label>
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched">
-              <label for="watched" class="film-details__control-label film-details__control-label--watched ${historyAddedClass}">Already watched</label>
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
-                <label for="favorite" class="film-details__control-label film-details__control-label--favorite ${favoriteAddedClass}">Add to favorites</label>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${watchlistAddedClass}>
+            <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
+            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${historyAddedClass}>
+              <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${favoriteAddedClass}>
+                <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
         </section>
       </div>
       <div class="film-details__bottom-container">
@@ -213,6 +212,7 @@ export default class Popup extends Smart {
   _commentDeleteClickHandler(evt) {
     evt.preventDefault();
     const newCommentsNumber = this._callback.commentDeleteClick(evt.target.dataset.id);
+    console.log(newCommentsNumber);
     this.updateData({
       commentsNumber: newCommentsNumber,
     });
@@ -221,7 +221,6 @@ export default class Popup extends Smart {
   _onFormSubmitHandler(evt) {
     if (evt.keyCode === ENTER && (evt.ctrlKey || evt.metaKey)) {
       const newComment = {
-        id: createRandomId(),
         comment: this._data.userCommentText,
         emotion: this._data.userEmoji,
         author: `Посетитель`,

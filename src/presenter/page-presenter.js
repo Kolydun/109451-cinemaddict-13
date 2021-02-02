@@ -143,10 +143,14 @@ export default class PagePresenter {
         });
         break;
       case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(updateType, update);
+        this._api.addCommentToServer(update).then((response) => {
+          this._commentsModel.addComment(updateType, response);
+        });
         break;
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.deleteComment(updateType, update);
+        this._api.deleteCommentFromServer(update).then(() => {
+          this._commentsModel.deleteComment(updateType, update);
+        });
         break;
     }
   }

@@ -223,7 +223,6 @@ export default class Stats extends Smart {
 
     this._films.forEach((film) => {
       const filmWatchingDate = dayjs(film.userDetails.watchingDate);
-
       if (today.diff(filmWatchingDate, `week`) === 0) {
         newFilteredFilms.push(film);
       }

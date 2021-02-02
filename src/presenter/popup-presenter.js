@@ -106,33 +106,40 @@ export default class PopupPresenter {
   }
 
   _handleFavoritesClick() {
+    this._filmCard.userDetails.isFavorite = !this._filmCard.userDetails.isFavorite;
     this._changeData(
         UserAction.UPDATE,
-        UpdateType.PATCH,
-        Object.assign({}, this._filmCard, {isFavorite: !this._filmCard.isFavorite}));
+        UpdateType.MINOR,
+        this._filmCard
+    );
   }
 
   _handleHistoryClick() {
+    this._filmCard.userDetails.isHistory = !this._filmCard.userDetails.isHistory;
     this._changeData(
         UserAction.UPDATE,
-        UpdateType.PATCH,
-        Object.assign({}, this._filmCard, {isHistory: !this._filmCard.isHistory}));
+        UpdateType.MINOR,
+        this._filmCard
+    );
   }
 
   _handleWatchlistClick() {
+    this._filmCard.userDetails.isWatchlist = !this._filmCard.userDetails.isWatchlist;
     this._changeData(
         UserAction.UPDATE,
-        UpdateType.PATCH,
-        Object.assign({}, this._filmCard, {isWatchlist: !this._filmCard.isWatchlist}));
+        UpdateType.MINOR,
+        this._filmCard
+    );
   }
 
   _handleCommentDeleteClick(commentIndex) {
     this._changeData(
         UserAction.DELETE_COMMENT,
         UpdateType.MAJOR_POPUP,
-        parseInt(commentIndex, 10)
+        // parseInt(commentIndex, 10)
+        commentIndex
     );
-    this._updateFilmCommentInfo();
+    // this._updateFilmCommentInfo();
 
     return this._commentsModel.getComments().length;
   }
@@ -143,15 +150,15 @@ export default class PopupPresenter {
         UpdateType.MAJOR_POPUP,
         newComment
     );
-    this._updateFilmCommentInfo();
+    // this._updateFilmCommentInfo();
 
     return this._commentsModel.getComments().length;
   }
 
-  _updateFilmCommentInfo() {
-    this._changeData(
-        UserAction.UPDATE,
-        UpdateType.PATCH,
-        Object.assign({}, this._filmCard, {comments: this._commentsModel.getComments()}));
-  }
+//   _updateFilmCommentInfo() {
+//     this._changeData(
+//         UserAction.UPDATE,
+//         UpdateType.PATCH,
+//         Object.assign({}, this._filmCard, {comments: this._commentsModel.getComments().id}));
+//   }
 }

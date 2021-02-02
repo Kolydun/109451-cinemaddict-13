@@ -80,7 +80,6 @@ export default class FilmCardPresenter {
         UserAction.UPDATE,
         UpdateType.MINOR,
         this._filmCard
-        // Object.assign({}, this._filmCard, {isFavorite: !this._filmCard.userDetails.isFavorite})
     );
   }
 
@@ -90,7 +89,6 @@ export default class FilmCardPresenter {
         UserAction.UPDATE,
         UpdateType.MINOR,
         this._filmCard
-        // Object.assign({}, this._filmCard, {isHistory: !this._filmCard.userDetails.isHistory})
     );
   }
 
@@ -100,7 +98,6 @@ export default class FilmCardPresenter {
         UserAction.UPDATE,
         UpdateType.MINOR,
         this._filmCard
-        // Object.assign({}, this._filmCard, {isWatchlist: !this._filmCard.userDetails.isWatchlist})
     );
   }
 }
