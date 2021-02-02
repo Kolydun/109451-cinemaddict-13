@@ -1,23 +1,26 @@
 import he from "he";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
-import Smart from "../utils/smart";
+import Smart from "./smart";
 import {getDate} from "../utils/utils";
-import {createRandomId} from "./mock/film-information-mock";
+import {createRandomId} from "../utils/utils";
 import {ENTER} from "../utils/const";
 
 dayjs.extend(duration);
 
 const createPopupTemplate = (data) => {
-  const {poster, title, originalTitle, rating, director, actors, time, country, description, release, genre, isFavorite, isHistory, isWatchlist, userEmoji, userCommentText, commentsNumber} = data;
+  const {poster, title, originalTitle, rating, director, actors, time, description, genre, ageRating} = data.filmInfo;
+  const {userEmoji, userCommentText, commentsNumber} = data;
+  const {isFavorite, isHistory, isWatchlist} = data.userDetails;
+  const {country, releaseDate} = data.filmInfo.release;
 
   function emojiNameRule() {
     let altName = null;
-    if (userEmoji === `./images/emoji/angry.png`) {
+    if (userEmoji === `angry`) {
       altName = `angry`;
-    } else if (userEmoji === `./images/emoji/smile.png`) {
+    } else if (userEmoji === `smile`) {
       altName = `smile`;
-    } else if (userEmoji === `./images/emoji/puke.png`) {
+    } else if (userEmoji === `puke`) {
       altName = `puke`;
     } else {
       altName = `sleeping`;
@@ -27,7 +30,7 @@ const createPopupTemplate = (data) => {
   }
 
   const emojiAdded = userEmoji
-    ? `<img src="${userEmoji}" width="55" height="55" alt="emoji-${emojiNameRule()}">`
+    ? `<img src="./images/emoji/${userEmoji}.png" width="55" height="55" alt="emoji-${emojiNameRule()}">`
     : ``;
 
   const favoriteAddedClass = isFavorite
@@ -56,7 +59,7 @@ const createPopupTemplate = (data) => {
         <div class="film-details__info-wrap">
           <div class="film-details__poster">
             <img class="film-details__poster-img" src=${poster} alt="">
-              <p class="film-details__age">18+</p>
+              <p class="film-details__age">${ageRating}+</p>
           </div>
           <div class="film-details__info">
             <div class="film-details__info-head">
@@ -83,7 +86,7 @@ const createPopupTemplate = (data) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${release}</td>
+                <td class="film-details__cell">${dayjs(releaseDate).format(`D MMMM YYYY`)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
@@ -153,7 +156,7 @@ export default class Popup extends Smart {
   constructor(card, commentsModel) {
     super();
     this._comments = commentsModel.getComments();
-    this._data = Popup.parseCardToData(card, this._comments);
+    this._data = Popup.parseCardToData(card);
 
     this._addPopupCloseButtonHandler = this._addPopupCloseButtonHandler.bind(this);
     this._favouritesClickHandler = this._favouritesClickHandler.bind(this);
@@ -185,25 +188,25 @@ export default class Popup extends Smart {
 
   _angryEmojiClickHandler() {
     this.updateData({
-      userEmoji: `./images/emoji/angry.png`,
+      userEmoji: `angry`,
     });
   }
 
   _smileEmojiClickHandler() {
     this.updateData({
-      userEmoji: `./images/emoji/smile.png`,
+      userEmoji: `smile`,
     });
   }
 
   _pukeEmojiClickHandler() {
     this.updateData({
-      userEmoji: `./images/emoji/puke.png`,
+      userEmoji: `puke`,
     });
   }
 
   _sleepingEmojiClickHandler() {
     this.updateData({
-      userEmoji: `./images/emoji/sleeping.png`,
+      userEmoji: `sleeping`,
     });
   }
 
@@ -219,13 +222,11 @@ export default class Popup extends Smart {
     if (evt.keyCode === ENTER && (evt.ctrlKey || evt.metaKey)) {
       const newComment = {
         id: createRandomId(),
-        text: this._data.userCommentText,
-        emoji: this._data.userEmoji,
+        comment: this._data.userCommentText,
+        emotion: this._data.userEmoji,
         author: `Посетитель`,
         date: getDate(),
       };
-
-      // this._callback.onFormSubmit(newComment);
 
       const newCommentsNumber = this._callback.onFormSubmit(newComment);
 
@@ -345,8 +346,8 @@ export default class Popup extends Smart {
     this.getElement().querySelector(`.film-details__close-btn`).removeEventListener(`click`, this._addPopupCloseButtonHandler);
   }
 
-  static parseCardToData(card, comments) {
-    return Object.assign({}, card, {userEmoji: ``, userCommentText: ``, commentsNumber: comments.length});
+  static parseCardToData(card) {
+    return Object.assign({}, card, {userEmoji: ``, userCommentText: ``, commentsNumber: card.comments.length});
   }
 
   static parseDataToCard(data) {

@@ -91,8 +91,8 @@ const getEmoji = () => {
 const randomComment = () => {
   return {
     id: createRandomId(),
-    text: `Текст комментария, который в будущем будет заменен на что-то более осмысленное чем пустой текст`,
-    emoji: `./images/emoji/` + getEmoji() + `.png`,
+    comment: `Текст комментария, который в будущем будет заменен на что-то более осмысленное чем пустой текст`,
+    emoji: getEmoji(),
     author: `Посетитель`,
     date: getDate(),
   };
@@ -201,23 +201,30 @@ export const createRandomId = () => {
 export const generateFilmCard = () => {
   return {
     id: createRandomId(),
-    title: createTitle(),
-    poster: createRandomPoster(),
-    description: createDescription(),
-    comments: createRandomComments(),
-    release: createReleaseDate(),
-    rating: createRating(),
-    time: getRandomInteger(60, 210),
-    genre: createGenre(),
-    country: createRandomCountry(),
-    originalTitle: createTitle(),
-    director: createRandomDirector(),
-    screenwriter: createRandomScreenwriter(),
-    actors: createRandomActors(),
-    allFilms: true,
-    watchingDate: createWatchingDate(),
-    isWatchlist: randomBoolean(),
-    isHistory: randomBoolean(),
-    isFavorite: randomBoolean(),
+    filmInfo: {
+      title: createTitle(),
+      originalTitle: createTitle(),
+      poster: createRandomPoster(),
+      description: createDescription(),
+      ageRating: `18+`,
+      release: {
+        releaseDate: createReleaseDate(),
+        country: createRandomCountry(),
+      },
+      rating: createRating(),
+      time: getRandomInteger(60, 210),
+      genre: createGenre(),
+      director: createRandomDirector(),
+      screenwriters: createRandomScreenwriter(),
+      actors: createRandomActors(),
+    },
+    userDetails: {
+      allFilms: true,
+      watchingDate: createWatchingDate(),
+      isWatchlist: randomBoolean(),
+      isHistory: randomBoolean(),
+      isFavorite: randomBoolean()
+    },
+    comments: createRandomComments()
   };
 };

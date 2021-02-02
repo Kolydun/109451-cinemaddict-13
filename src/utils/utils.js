@@ -81,31 +81,31 @@ const getWeightForNullParameter = (parameterA, parameterB) => {
 };
 
 export const sortDateUp = (taskA, taskB) => {
-  const weight = getWeightForNullParameter(taskA.release, taskB.release);
+  const weight = getWeightForNullParameter(taskA.filmInfo.release.releaseDate, taskB.filmInfo.release.releaseDate);
 
   if (weight !== null) {
     return weight;
   }
 
-  return dayjs(taskB.release).diff(dayjs(taskA.release));
+  return dayjs(taskB.filmInfo.release.releaseDate).diff(dayjs(taskA.filmInfo.release.releaseDate));
 };
 
 export const sortRatingUp = (taskA, taskB) => {
-  const weight = getWeightForNullParameter(taskA.rating, taskB.rating);
+  const weight = getWeightForNullParameter(taskA.filmInfo.rating, taskB.filmInfo.rating);
 
   if (weight !== null) {
     return weight;
   }
 
-  return (taskB.rating) - (taskA.rating);
+  return (taskB.filmInfo.rating) - (taskA.filmInfo.rating);
 };
 
 export const filter = {
-  [FilterType.ALL]: (cards) => cards.filter((card) => card.allFilms === true),
-  [FilterType.WATCHLIST]: (cards) => cards.filter((card) => card.isWatchlist === true),
-  [FilterType.HISTORY]: (cards) => cards.filter((card) => card.isHistory === true),
-  [FilterType.FAVORITES]: (cards) => cards.filter((card) => card.isFavorite === true),
-  [FilterType.STATISTICS]: (cards) => cards.filter((card) => card.allFilms === true),
+  [FilterType.ALL]: (cards) => cards.filter((card) => card.userDetails.allFilms === true),
+  [FilterType.WATCHLIST]: (cards) => cards.filter((card) => card.userDetails.isWatchlist === true),
+  [FilterType.HISTORY]: (cards) => cards.filter((card) => card.userDetails.isHistory === true),
+  [FilterType.FAVORITES]: (cards) => cards.filter((card) => card.userDetails.isFavorite === true),
+  [FilterType.STATISTICS]: (cards) => cards.filter((card) => card.userDetails.allFilms === true),
 };
 
 export const getDate = () => {
@@ -113,7 +113,7 @@ export const getDate = () => {
 };
 
 export function ratingRule(filmsArray) {
-  const watchedFilms = filmsArray.filter((film) => film.isHistory === true).length;
+  const watchedFilms = filmsArray.filter((film) => film.userDetails.isHistory === true).length;
 
   let rating = null;
   if (watchedFilms <= Rating.NOVICE_RATING_TOP && watchedFilms > Rating.NO_RATING) {
@@ -128,3 +128,7 @@ export function ratingRule(filmsArray) {
 
   return rating;
 }
+
+export const createRandomId = () => {
+  return Date.now() + parseInt(Math.random() * 10000, 10);
+};

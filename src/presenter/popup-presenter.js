@@ -4,11 +4,12 @@ import CommentPresenter from "./comment-presenter";
 import Popup from "../view/popup";
 
 export default class PopupPresenter {
-  constructor(footer, changeData, commentsModel) {
+  constructor(footer, changeData, commentsModel, api) {
     this._commentsModel = commentsModel;
     this._footer = footer;
     this._changeData = changeData;
     this._popupComponent = null;
+    this._api = api;
 
     this._closePopupControlsHandler = this._closePopupControlsHandler.bind(this);
 
@@ -26,6 +27,7 @@ export default class PopupPresenter {
     const prevPopup = this._popupComponent;
 
     this._filmCard = card;
+    this._getFilmCommentsFromServer(this._filmCard.id);
     this._popupComponent = new Popup(card, this._commentsModel);
 
     if (prevPopup === null) {
@@ -50,12 +52,23 @@ export default class PopupPresenter {
 
   _addComments() {
     const commentsContainer = this._popupComponent.getElement().querySelector(`.film-details__comments-list`);
-
     const comments = this._commentsModel.getComments();
+
     comments.forEach((comment) => {
       const commentPresenter = new CommentPresenter(commentsContainer);
       commentPresenter.init(comment);
     });
+  }
+
+  _getFilmCommentsFromServer(filmId) {
+    this._api.getComments(filmId)
+      .then((comments) => {
+        this._commentsModel.setComments(comments);
+        this._popupComponent.updateElement();
+      })
+      .catch(() => {
+        this._commentsModel.setComments([]);
+      });
   }
 
   _closePopupControlsHandler(isReload) {

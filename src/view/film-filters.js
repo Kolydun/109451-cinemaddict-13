@@ -58,22 +58,7 @@ export default class FilmsFilters extends Component {
   }
 
   _filterTypeClickHandler(evt) {
-    // if (evt.target.id !== `Stats`) {
     this._callback.filterTypeClick(evt.target.id);
-    // }
-
-    // if (!this.getElement().querySelector(`.main-navigation__additional`)
-    //   .classList.contains(`main-navigation__additional--active`)) {
-    //   this.getElement().querySelector(`.main-navigation__additional`)
-    //     .classList.add(`main-navigation__additional--active`);
-    //   this.getElement().querySelectorAll(`.main-navigation__item`)
-    //     .classList.remove(`main-navigation__item--active`);
-    // } else if (
-    //   this.getElement().querySelector(`.main-navigation__additional`)
-    //     .classList.contains(`main-navigation__additional--active`)) {
-    //   this.getElement().querySelector(`.main-navigation__additional`)
-    //     .classList.remove(`main-navigation__additional--active`);
-    // }
   }
 
   setFilterTypeClickHandler(callback) {

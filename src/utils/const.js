@@ -15,7 +15,9 @@ export const UpdateType = {
   MINOR: `MINOR`,
   MAJOR: `MAJOR`,
   MAJOR_POPUP: `MAJOR_POPUP`,
-  STATS: `STATS`
+  STATS: `STATS`,
+  INIT: `INIT`,
+  // INIT_POPUP: `INIT_POPUP`
 };
 
 export const RenderPosition = {

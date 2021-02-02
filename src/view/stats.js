@@ -1,4 +1,4 @@
-import Smart from "../utils/smart";
+import Smart from "./smart";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import Chart from "chart.js";
@@ -86,7 +86,7 @@ const createStatsTemplate = (films, uniqueLabelsAndCounters, defaultFilmsList, c
   function totalTime() {
     let totalTimeInMinute = 0;
     films.forEach((film) => {
-      totalTimeInMinute = film.time + totalTimeInMinute;
+      totalTimeInMinute = film.filmInfo.time + totalTimeInMinute;
     });
 
     return totalTimeInMinute;
@@ -152,7 +152,7 @@ const createStatsTemplate = (films, uniqueLabelsAndCounters, defaultFilmsList, c
 export default class Stats extends Smart {
   constructor(films) {
     super();
-    this._films = films.filter((film) => film.isHistory === true);
+    this._films = films.filter((film) => film.userDetails.isHistory === true);
     this._filmsFiltered = this._films;
     this._checkedInput = `All`;
 
@@ -203,7 +203,7 @@ export default class Stats extends Smart {
     const today = dayjs(Date.now());
 
     this._films.forEach((film) => {
-      const filmWatchingDate = dayjs(film.watchingDate);
+      const filmWatchingDate = dayjs(film.userDetails.watchingDate);
 
       if (today.diff(filmWatchingDate, `day`) === 0) {
         newFilteredFilms.push(film);
@@ -222,9 +222,9 @@ export default class Stats extends Smart {
     const today = dayjs(Date.now());
 
     this._films.forEach((film) => {
-      const filmWatchingDate = dayjs(film.watchingDate);
+      const filmWatchingDate = dayjs(film.userDetails.watchingDate);
 
-      if (today.diff(filmWatchingDate, `day`) === 1) {
+      if (today.diff(filmWatchingDate, `week`) === 0) {
         newFilteredFilms.push(film);
       }
     });
@@ -241,7 +241,7 @@ export default class Stats extends Smart {
     const today = dayjs(Date.now());
 
     this._films.forEach((film) => {
-      const filmWatchingDate = dayjs(film.watchingDate);
+      const filmWatchingDate = dayjs(film.userDetails.watchingDate);
 
       if (today.diff(filmWatchingDate, `month`) === 0) {
         newFilteredFilms.push(film);
@@ -260,7 +260,7 @@ export default class Stats extends Smart {
     const today = dayjs(Date.now());
 
     this._films.forEach((film) => {
-      const filmWatchingDate = dayjs(film.watchingDate);
+      const filmWatchingDate = dayjs(film.userDetails.watchingDate);
 
       if (today.diff(filmWatchingDate, `year`) === 0) {
         newFilteredFilms.push(film);
@@ -276,7 +276,7 @@ export default class Stats extends Smart {
 
   _uniqueLabelsAndCounters() {
     const genresCounters = {};
-    const filmsGenres = this._filmsFiltered.map((film) => film.genre);
+    const filmsGenres = this._filmsFiltered.map((film) => film.filmInfo.genre);
 
     filmsGenres.forEach((filmGenre) => {
       filmGenre.forEach((genre) => {

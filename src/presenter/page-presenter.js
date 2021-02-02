@@ -5,25 +5,28 @@ import NoFilms from "../view/no-films-window";
 import FilmCardPresenter from "./film-card-presenter";
 import FilmsContainer from "../view/films-container";
 import ShowMore from "../view/show-more";
+import Stats from "../view/stats";
+import Loading from "../view/loading";
 import {render, remove, sortRatingUp, sortDateUp, filter} from "../utils/utils";
 import {UserAction, UpdateType, SortType, RenderPosition} from "../utils/const";
-import Stats from "../view/stats";
-
 const FILMS_NUMBER_PER_STEP = 5;
 
 export default class PagePresenter {
-  constructor(header, main, footer, moviesModel, filtersModel, commentsModel) {
+  constructor(header, main, footer, moviesModel, filtersModel, commentsModel, api) {
     this._moviesModel = moviesModel;
     this._filtersModel = filtersModel;
     this._commentsModel = commentsModel;
+    this._api = api;
     this._header = header;
     this._main = main;
     this._footer = footer;
     this._renderedCardsCount = FILMS_NUMBER_PER_STEP;
     this._filmPresenter = {};
     this._currentSortType = SortType.DEFAULT;
+    this._isLoading = true;
 
     this._noFilmsComponent = new NoFilms();
+    this._loadingComponent = new Loading();
     this._filmsContainerComponent = new FilmsContainer();
 
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
@@ -41,7 +44,7 @@ export default class PagePresenter {
   }
 
   _renderUserRating() {
-    this._userRatingComponent = new UserRating(this._getMovies());
+    this._userRatingComponent = new UserRating(this._moviesModel.getMovies());
     render(this._header, this._userRatingComponent, RenderPosition.BEFOREEND);
   }
 
@@ -51,12 +54,16 @@ export default class PagePresenter {
     render(this._main, this._sortListComponent, RenderPosition.AFTERBEGIN);
   }
 
+  _renderLoadingScreen() {
+    render(this._main, this._loadingComponent, RenderPosition.BEFOREEND);
+  }
+
   _renderFilmsContainer() {
     render(this._main, this._filmsContainerComponent, RenderPosition.BEFOREEND);
   }
 
   _renderStats() {
-    this._statsComponent = new Stats(this._getMovies());
+    this._statsComponent = new Stats(this._moviesModel.getMovies());
     render(this._main, this._statsComponent, RenderPosition.BEFOREEND);
   }
 
@@ -77,7 +84,7 @@ export default class PagePresenter {
   }
 
   _renderFilmCard(card) {
-    const filmCardPresenter = new FilmCardPresenter(this._footer, this._filmsContainerComponent, this._handleViewAction, this._commentsModel);
+    const filmCardPresenter = new FilmCardPresenter(this._footer, this._filmsContainerComponent, this._handleViewAction, this._commentsModel, this._api);
     filmCardPresenter.init(card);
     this._filmPresenter[card.id] = filmCardPresenter;
   }
@@ -87,6 +94,11 @@ export default class PagePresenter {
   }
 
   _renderPage() {
+    if (this._isLoading) {
+      this._renderLoadingScreen();
+      return;
+    }
+
     const cards = this._getMovies();
     const cardsCount = cards.length;
 
@@ -105,8 +117,6 @@ export default class PagePresenter {
         this._renderShowMore();
       }
     }
-
-    // this.hideFilmsListHandler();
   }
 
   _handleShowMoreButtonClick() {
@@ -128,7 +138,9 @@ export default class PagePresenter {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE:
-        this._moviesModel.updateMovie(updateType, update);
+        this._api.updateMovie(update).then((response) => {
+          this._moviesModel.updateMovie(updateType, response);
+        });
         break;
       case UserAction.ADD_COMMENT:
         this._commentsModel.addComment(updateType, update);
@@ -152,7 +164,7 @@ export default class PagePresenter {
       case UpdateType.MAJOR:
         this._statsComponent.hide();
         this.showFilmListHandler();
-        this._clearPage({resetRenderedCardsCount: true, resetSortType: false});
+        this._clearPage({resetRenderedCardsCount: true, resetSortType: true});
         this._renderPage();
         break;
       case UpdateType.MAJOR_POPUP:
@@ -161,6 +173,11 @@ export default class PagePresenter {
         this._currentSortType = SortType.DEFAULT;
         this.hideFilmListHandler();
         this._statsComponent.visibility();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderPage();
         break;
     }
   }
@@ -192,6 +209,7 @@ export default class PagePresenter {
     remove(this._sortListComponent);
     remove(this._userRatingComponent);
     remove(this._filmsNumberComponent);
+    remove(this._noFilmsComponent);
 
     if (resetRenderedCardsCount) {
       this._renderedCardsCount = FILMS_NUMBER_PER_STEP;
