@@ -17,4 +17,8 @@ export default class CommentPresenter {
   _renderComment() {
     render(this._commentContainer, this._commentComponent, RenderPosition.AFTERBEGIN);
   }
+
+  errorShake() {
+    this._commentComponent.shake();
+  }
 }

@@ -10,6 +10,7 @@ export default class PopupPresenter {
     this._changeData = changeData;
     this._popupComponent = null;
     this._api = api;
+    this._commentPresenters = {};
 
     this._closePopupControlsHandler = this._closePopupControlsHandler.bind(this);
 
@@ -57,6 +58,7 @@ export default class PopupPresenter {
     comments.forEach((comment) => {
       const commentPresenter = new CommentPresenter(commentsContainer);
       commentPresenter.init(comment);
+      this._commentPresenters[comment.id] = commentPresenter;
     });
   }
 
@@ -143,7 +145,7 @@ export default class PopupPresenter {
       });
     }).catch(() => {
       this._popupComponent.updateElement();
-      this._popupComponent.shake();
+      this._commentPresenters[commentIndex].errorShake();
     });
   }
 

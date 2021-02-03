@@ -21,8 +21,8 @@ export default class Smart extends Component {
   }
 
   updateElement() {
-    let prevElement = this.getElement();
-    let prevElementScrollY = prevElement.scrollTop;
+    const prevElement = this.getElement();
+    const prevElementScrollY = prevElement.scrollTop;
     const parent = prevElement.parentElement;
     this.removeElement();
 

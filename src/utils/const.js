@@ -5,9 +5,7 @@ export const SortType = {
 };
 
 export const UserAction = {
-  UPDATE: `UPDATE`,
-  ADD_COMMENT: `ADD_COMMENT`,
-  DELETE_COMMENT: `DELETE_COMMENT`
+  UPDATE: `UPDATE`
 };
 
 export const UpdateType = {
@@ -17,7 +15,6 @@ export const UpdateType = {
   MAJOR_POPUP: `MAJOR_POPUP`,
   STATS: `STATS`,
   INIT: `INIT`,
-  // INIT_POPUP: `INIT_POPUP`
 };
 
 export const RenderPosition = {
