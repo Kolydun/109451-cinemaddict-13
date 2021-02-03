@@ -22,8 +22,4 @@ export default class ShowMore extends Component {
     this._callback.click = callback;
     this.getElement().addEventListener(`click`, this._clickHandler);
   }
-
-  deleteClickHandler() {
-    this.getElement().removeEventListener(`click`, this._clickHandler);
-  }
 }
